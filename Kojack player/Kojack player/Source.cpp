@@ -11,14 +11,14 @@
 #include <array>        
 #include <random>       
 #include <chrono>       
-#define directory "C:\\Users\\Owner\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\resources/"
+#define directory "C:\\Users\\lenovo\\Desktop\\VSWAV/"
 #define max_numsongs 10000
 using namespace std;
 struct song
 {
 	string name;
 	string genre;
-	string album ;
+	string album;
 	string artist;
 	int year;
 }song_data[10000];
@@ -29,7 +29,7 @@ void get_all_files_names_within_folder(string folder);
 void playMusic(const string& filename, int &play_num);
 void list_display();
 void playback();
-void shuffle(); 
+void shuffle();
 void check_order(int &i);
 void read();
 
@@ -55,11 +55,11 @@ int main()
 		int c; cin >> c;
 		if (c == 1)
 			find_by_name();
-		else if(c==2)
+		else if (c == 2)
 			find_by_genre();
-		else if (c==3)
+		else if (c == 3)
 			find_by_album();
-		else if(c==4)
+		else if (c == 4)
 			find_by_artist();
 		else if (c == 5)
 			find_by_year();
@@ -74,7 +74,7 @@ int main()
 }
 void shuffle()
 {
-	/* this function shuffles the indecies and put them in array named shuffled 
+	/* this function shuffles the indecies and put them in array named shuffled
 		then uses the array shuffled as an index to play music from the vector songs */
 
 
@@ -86,27 +86,27 @@ void shuffle()
 	}
 	// generating 
 	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-	
-	 shuffle(shuffled_order.begin(), shuffled_order.end(), default_random_engine(seed));
-	 
-	 int shuffled[max_numsongs] , counter=0;
-	 for (int i = 0; i < max_numsongs ; i++)
-	 {
-		 if (shuffled_order[i] != 0)
-		 {
-			 shuffled[counter] = shuffled_order[i] - 1;
-			 counter++;
-		 }
-	 }
+
+	shuffle(shuffled_order.begin(), shuffled_order.end(), default_random_engine(seed));
+
+	int shuffled[max_numsongs], counter = 0;
+	for (int i = 0; i < max_numsongs; i++)
+	{
+		if (shuffled_order[i] != 0)
+		{
+			shuffled[counter] = shuffled_order[i] - 1;
+			counter++;
+		}
+	}
 	for (int i = 1; i <= songs.size(); i++)
 	{
-		cout << i <<": " << songs[shuffled[i-1]] <<endl;
-		
+		cout << i << ": " << songs[shuffled[i - 1]] << endl;
+
 	}
 	cout << endl;
 	for (int i = 0; i < songs.size(); i++)
 	{
-		playMusic(songs[shuffled[i]] , i );
+		playMusic(songs[shuffled[i]], i);
 		check_order(i);
 	}
 }
@@ -150,17 +150,17 @@ void get_all_files_names_within_folder(string folder)
 	string search_path = folder + "/*.*";
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
-	if (hFind != INVALID_HANDLE_VALUE) 
+	if (hFind != INVALID_HANDLE_VALUE)
 	{
-				int i = 0;
-		do 
+		int i = 0;
+		do
 		{
 			// read all (real) files in current folder
 			// , delete '!' read other 2 default folder . and ..
-			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) 
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
 				song_data[i].name = fd.cFileName;
-				
+
 				songs.push_back(fd.cFileName);
 				i++;
 			}
@@ -192,7 +192,7 @@ void playMusic(const std::string& filename, int &play_num)
 		// Display the playing position
 		std::cout << "\rPlaying... " << music.getPlayingOffset().asSeconds() << " sec        ";
 		std::cout << std::flush;
-		
+
 	}
 	std::cout << std::endl << std::endl;
 }
@@ -205,20 +205,30 @@ void read()
 		getline(fs, song_data[i].artist);
 		getline(fs, song_data[i].album);
 		fs >> song_data[i].year;
-		cout << song_data[i].artist<<endl;
+		cout << song_data[i].artist << endl;
 	}
 
 }
 void find_by_name()
 {
-	cout << "Enter Song Name : ";
-	string s; getline(cin, s);
-	for(int i=0;i<songs.size();i++)
+	cout << "Enter Song Name : ";	
+	string s;
+	getline(cin, s);
+	/*char x;
+	while (true)
+	{
+		cin >> x;
+		if (x == '0')
+			break;
+		s += x;
+	}*/
+
+	for (int i = 0; i < songs.size(); i++)
 	{
 		found = false;
-		if (s.find(song_data[i].name) != -1)
+		if (song_data[i].name.find(s) < song_data[i].name.size())
 		{
-			cout << i << song_data[i].name;
+			cout << i << " " << song_data[i].name<<endl;
 			found = true;
 		}
 	}
@@ -240,11 +250,22 @@ void find_by_name()
 void find_by_genre()
 {
 	cout << "Enter Genre : ";
-	string s; getline(cin, s);
+	string s;
+	/*getline(cin, s);*/
+
+	char x;
+	while (true)
+	{
+		cin >> x;
+		if (x == '0')
+			break;
+		s += x;
+	}
+
 	found = false;
 	for (int i = 0; i < songs.size(); i++)
 	{
-		if (s.find(song_data[i].genre) != -1)
+		if (song_data[i].genre.find(s) < song_data[i].genre.size())
 		{
 			cout << i << song_data[i].name;
 			found = true;
@@ -265,111 +286,130 @@ void find_by_genre()
 		}
 	}
 }
-	void find_by_album()
+void find_by_album()
+{
+	cout << "Enter Album : ";
+	string s;
+	/*getline(cin, s);*/
+	char x;
+	while (true)
 	{
-		cout << "Enter Album : ";
-		string s; getline(cin, s);
-		found = false;
-		for (int i = 0; i < songs.size(); i++)
-		{
-			if (s.find(song_data[i].album) != -1)
-			{
-				cout << i << song_data[i].name;
-				found = true;
-			}
-			else
-				cout << "Not Found!";
-		}
-		if (found == true)
-		{
+		cin >> x;
+		if (x == '0')
+			break;
+		s += x;
+	}
+	
 
-			cout << "Do You Wish To Play A Song? press '1' if ok else press 2";
-			char command; cin >> command;
-			if (command == '1')
-			{
-				cout << "Enter Song Number : ";
-				int sN; cin >> sN;
-				playMusic(song_data[sN].name, sN);
-			}
+	found = false;
+	for (int i = 0; i < songs.size(); i++)
+	{
+		if (song_data[i].album.find(s) < song_data[i].album.size())
+		{
+			cout << i << song_data[i].name;
+			found = true;
+		}
+		else
+			cout << "Not Found!";
+	}
+	if (found == true)
+	{
+
+		cout << "Do You Wish To Play A Song? press '1' if ok else press 2";
+		char command; cin >> command;
+		if (command == '1')
+		{
+			cout << "Enter Song Number : ";
+			int sN; cin >> sN;
+			playMusic(song_data[sN].name, sN);
 		}
 	}
-	void find_by_artist()
+}
+void find_by_artist()
+{
+	cout << "Enter Artist : ";
+	string s;
+	/*getline(cin, s);*/
+	char x;
+	while (true)
 	{
-		cout << "Enter Artist : ";
-		string s; getline(cin, s);
-		found = false;
-		for (int i = 0; i < songs.size(); i++)
+		cin >> x;
+		if (x == '0')
+			break;
+		s += x;
+	}
+	found = false;
+	for (int i = 0; i < songs.size(); i++)
+	{
+		if (song_data[i].artist.find(s) < song_data[i].artist.size())
 		{
-			if (s.find(song_data[i].artist) != -1)
-			{
-				cout << i << song_data[i].name;
-				found = true;
-			}
-			else
-				cout << "Not Found!";
+			cout << i << song_data[i].name;
+			found = true;
 		}
-		if (found == true)
-		{
+		else
+			cout << "Not Found!";
+	}
+	if (found == true)
+	{
 
-			cout << "Do You Wish To Play A Song? press '1' if ok else press 2";
-			char command; cin >> command;
-			if (command == '1')
-			{
-				cout << "Enter Song Number : ";
-				int sN; cin >> sN;
-				playMusic(song_data[sN].name, sN);
-			}
+		cout << "Do You Wish To Play A Song? press '1' if ok else press 2";
+		char command; cin >> command;
+		if (command == '1')
+		{
+			cout << "Enter Song Number : ";
+			int sN; cin >> sN;
+			playMusic(song_data[sN].name, sN);
 		}
 	}
-	void find_by_year()
+}
+void find_by_year()
+{
+	cout << "Enter Release Year : ";
+	int s; cin >> s;
+	found = false;
+	for (int i = 0; i < songs.size(); i++)
 	{
-		cout << "Enter Release Year : ";
-		int s; cin >> s;
-		found = false;
-		for (int i = 0; i < songs.size(); i++)
+		if (song_data[i].year == s)
 		{
-			if (song_data[i].year == s)
-			{
-				cout << i << song_data[i].name;
-				found = true;
-			}
-			else
-				cout << "Not Found!";
+			cout << i << song_data[i].name;
+			found = true;
 		}
-		if (found == true)
-		{
+		else
+			cout << "Not Found!";
+	}
+	if (found == true)
+	{
 
-			cout << "Do You Wish To Play A Song? press '1' if ok else press 2";
-			char command; cin >> command;
-			if (command == '1')
-			{
-				cout << "Enter Song Number : ";
-				int sN; cin >> sN;
-				playMusic(song_data[sN].name, sN);
-			}
+		cout << "Do You Wish To Play A Song? press '1' if ok else press 2";
+		char command; cin >> command;
+		if (command == '1')
+		{
+			cout << "Enter Song Number : ";
+			int sN; cin >> sN;
+			playMusic(song_data[sN].name, sN);
 		}
 	}
-		//if (cin >> x)
-		//{
-		//	if (x == 'p' &&  music.getStatus() == sf::Music::Playing)
-		//		music.pause();
-		//	else if (x == 'p')
-		//		music.play();
-		//	else if (x == 'n')
-		//	{
-		//		//next
-		//		return;
-		//	}
-		//	else if (x == 's' && music.getStatus() == sf::Music::Playing)
-		//	{
-		//		music.stop();
-		//	}
-		//	else if (x == 'b')
-		//	{
-		//		//b as in backwards 
-		//		play_num-=2;
-		//		return;
-		//	}
-		//	
-		//}
-
+}
+//if (cin >> x)
+//{
+//	if (x == 'p' &&  music.getStatus() == sf::Music::Playing)
+//		music.pause();
+//	else if (x == 'p')
+//		music.play();
+//	else if (x == 'n')
+//	{
+//		//next
+//		return;
+//	}
+//	else if (x == 's' && music.getStatus() == sf::Music::Playing)
+//	{
+//		music.stop();
+//	}
+//	else if (x == 'b')
+//	{
+//		//b as in backwards 
+//		play_num-=2;
+//		return;
+//	}
+//	
+//}
