@@ -17,9 +17,13 @@ using namespace std;
 struct song
 {
 	string name;
+	string name_search;
 	string genre;
+	string genre_search;
 	string album;
+	string album_search;
 	string artist;
+	string artist_search;
 	int year;
 }song_data[10000];
 
@@ -41,6 +45,7 @@ void find_by_year();
 
 int main()
 {
+	
 	// Welcome to main 
 	get_all_files_names_within_folder(directory);
 	read();
@@ -69,6 +74,7 @@ int main()
 		shuffle();
 	else
 		playback();
+
 	system("pause");
 	return 0;
 }
@@ -160,6 +166,15 @@ void get_all_files_names_within_folder(string folder)
 			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
 				song_data[i].name = fd.cFileName;
+				song_data[i].name_search = fd.cFileName;
+
+				for (int j = 0; j < song_data[i].name_search.size(); j++)
+				{
+					if (song_data[i].name_search[j] >= 65 && song_data[i].name_search[j] <= 90)
+					{
+						song_data[i].name_search[j] += 32;
+					}
+				}
 
 				songs.push_back(fd.cFileName);
 				i++;
@@ -211,24 +226,23 @@ void read()
 }
 void find_by_name()
 {
-	cout << "Enter Song Name : ";	
+	cout << "Enter Song Name : ";
 	string s;
+	cin.ignore();
 	getline(cin, s);
-	/*char x;
-	while (true)
+	for (int i = 0; i < s.size(); i++)
 	{
-		cin >> x;
-		if (x == '0')
-			break;
-		s += x;
-	}*/
+		if (s[i] >= 65 && s[i] <= 90)
+			s[i] -= 32;
+	}
+	
 
+	found = false;
 	for (int i = 0; i < songs.size(); i++)
 	{
-		found = false;
-		if (song_data[i].name.find(s) < song_data[i].name.size())
+		if (song_data[i].name_search.find(s) < song_data[i].name_search.size())
 		{
-			cout << i << " " << song_data[i].name<<endl;
+			cout << i << " " << song_data[i].name << endl;
 			found = true;
 		}
 	}
@@ -251,27 +265,22 @@ void find_by_genre()
 {
 	cout << "Enter Genre : ";
 	string s;
-	/*getline(cin, s);*/
-
-	char x;
-	while (true)
+	cin.ignore();
+    getline(cin, s);
+	for (int i = 0; i < s.size(); i++)
 	{
-		cin >> x;
-		if (x == '0')
-			break;
-		s += x;
+		if (s[i] >= 65 && s[i] <= 90)
+			s[i] -= 32;
 	}
 
 	found = false;
 	for (int i = 0; i < songs.size(); i++)
 	{
-		if (song_data[i].genre.find(s) < song_data[i].genre.size())
+		if (song_data[i].genre_search.find(s) < song_data[i].genre_search.size())
 		{
 			cout << i << song_data[i].name;
 			found = true;
 		}
-		else
-			cout << "Not Found!";
 	}
 	if (found == true)
 	{
@@ -284,33 +293,32 @@ void find_by_genre()
 			int sN; cin >> sN;
 			playMusic(song_data[sN].name, sN);
 		}
+		else
+			cout << "Not Found!";
 	}
 }
 void find_by_album()
 {
 	cout << "Enter Album : ";
 	string s;
-	/*getline(cin, s);*/
-	char x;
-	while (true)
+	cin.ignore();
+	getline(cin, s);
+	for (int i = 0; i < s.size(); i++)
 	{
-		cin >> x;
-		if (x == '0')
-			break;
-		s += x;
+		if (s[i] >= 65 && s[i] <= 90)
+			s[i] -= 32;
 	}
-	
+
 
 	found = false;
 	for (int i = 0; i < songs.size(); i++)
 	{
-		if (song_data[i].album.find(s) < song_data[i].album.size())
+		if (song_data[i].album_search.find(s) < song_data[i].album_search.size())
 		{
 			cout << i << song_data[i].name;
 			found = true;
 		}
-		else
-			cout << "Not Found!";
+		
 	}
 	if (found == true)
 	{
@@ -324,30 +332,29 @@ void find_by_album()
 			playMusic(song_data[sN].name, sN);
 		}
 	}
+	else
+		cout << "Not Found!";
 }
 void find_by_artist()
 {
 	cout << "Enter Artist : ";
 	string s;
-	/*getline(cin, s);*/
-	char x;
-	while (true)
+	cin.ignore();
+	getline(cin, s);
+	for (int i = 0; i < s.size(); i++)
 	{
-		cin >> x;
-		if (x == '0')
-			break;
-		s += x;
+		if (s[i] >= 65 && s[i] <= 90)
+			s[i] -= 32;
 	}
 	found = false;
 	for (int i = 0; i < songs.size(); i++)
 	{
-		if (song_data[i].artist.find(s) < song_data[i].artist.size())
+		if (song_data[i].artist_search.find(s) < song_data[i].artist_search.size())
 		{
 			cout << i << song_data[i].name;
 			found = true;
 		}
-		else
-			cout << "Not Found!";
+		
 	}
 	if (found == true)
 	{
@@ -361,6 +368,8 @@ void find_by_artist()
 			playMusic(song_data[sN].name, sN);
 		}
 	}
+	else
+		cout << "Not Found!";
 }
 void find_by_year()
 {
