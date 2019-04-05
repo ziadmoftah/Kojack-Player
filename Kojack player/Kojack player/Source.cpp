@@ -257,12 +257,13 @@ void list_display()
 
 void playback(vector<string>names)
 {
-	if (!shuffled) {
+	system("cls");
+	if (!shufflle) {
 	for (int i = 0 ; i < names.size(); i++)
 	{
-		system("cls");
 		playMusic(names[i], i);
 		check_order(i);
+		system("cls");
 	}
 	}
 	else {
