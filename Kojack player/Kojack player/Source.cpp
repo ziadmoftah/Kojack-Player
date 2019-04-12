@@ -20,7 +20,7 @@ using namespace std;
 using namespace sf;
 
 int main() {
-	sf::RenderWindow window(sf::VideoMode(800 , 600), "My window" , sf::Style::Default);
+	sf::RenderWindow window(sf::VideoMode(800 , 600), "Kojack Player" , sf::Style::Default);
 	
 	
 	sf::RectangleShape seperator(sf::Vector2f(800.0f, 10.0f)); 
@@ -44,30 +44,35 @@ int main() {
 
 	sf::RectangleShape songs_list(sf::Vector2f(200, 50));
 	songs_list.setFillColor(sf::Color::Green);
-	songs_list.setPosition(0, 50); 
+	songs_list.setPosition(0, 80); 
 
 
 	sf::RectangleShape artist_list(sf::Vector2f(200, 50));
 	artist_list.setFillColor(sf::Color::Yellow);
-	artist_list.setPosition(200, 50);
+	artist_list.setPosition(200, 80);
 
 
 	sf::RectangleShape album_list(sf::Vector2f(200, 50));
 	album_list.setFillColor(sf::Color::Blue);
-	album_list.setPosition(400, 50); 
+	album_list.setPosition(400, 80); 
 
 
 
 	sf::RectangleShape genre_list(sf::Vector2f(200, 50));
 	genre_list.setFillColor(sf::Color::Cyan);
-	genre_list.setPosition(600, 50); 
+	genre_list.setPosition(600, 80); 
 
-	sf::Font font; 
-	
 
+
+	sf::Font welcome_font;
+	welcome_font.loadFromFile("parkway lush.ttf");
 	sf::Text welcome; 
 	welcome.setString("Welcome to Kojack player");
-	welcome.setPosition(400, 0); 
+	welcome.setFont(welcome_font); 
+	welcome.setFillColor(sf::Color::Black);
+	welcome.setPosition(200, 10); 
+	welcome.setCharacterSize(50); 
+	
 
 
 
@@ -97,8 +102,8 @@ int main() {
 			}
 			
 		}
+		window.clear();
 		window.draw(back_pic); 
-		window.draw(welcome); 
 		window.draw(genre_list);
 		window.draw(album_list); 
 		window.draw(songs_list); 
@@ -107,8 +112,8 @@ int main() {
 		window.draw(forwad_button);
 		window.draw(play_button); 
 		window.draw(seperator); 
+		window.draw(welcome); 
 		window.display(); 
-		window.clear();
 	}
 
 
