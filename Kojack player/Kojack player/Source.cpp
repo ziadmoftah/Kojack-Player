@@ -1,25 +1,9 @@
-#pragma warning(disable : 4996) //Disables error (4996) bec it is just vs freaking on us  
-#include <SFML/Audio.hpp>
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <cstdio> 
-#include <vector>
-#include <map>
-#include <Windows.h>
-#include <fstream>
-#include <array>        
-#include <random>       
-#include <chrono> 
-#include <conio.h>
-#define directory "C:\\Users\\Owner\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\resources/"
-#define max_numsongs 10000
-#define Low_rating_activator 3
+#include <bits/stdc++.h>
+
 using namespace std;
-bool quit = false;
-bool menu = false;
-bool found;
-int numUser = 0;
+
+int numUser=0;
+vector<string>songs;
 
 struct user
 {
@@ -28,17 +12,6 @@ struct user
 	map<string, int>rate;
 };
 user user_data[9];
-/*struct song
-{
-	string name;
-	string genre;
-	string album;
-	string artist;
-	int year;
-	int rating = 0;
-	bool display = true;
-}song_data[10000];*/
-
 struct song
 {
 	string name;
@@ -46,38 +19,15 @@ struct song
 	string album;
 	string artist;
 	int year;
-	int rating = 0;
+	int rating =0;
 	bool display = true;
-}song_data[max_numsongs];
-
-int shuffled[max_numsongs], counter = 0;
-
-bool shufflle = false;
+}song_data[10000];
 
 
-vector<string> songs;
-void get_all_files_names_within_folder(string folder);
-void playMusic(const string& filename, int &play_num);
-void playSound();
-void list_display(vector<string> ToPlay, int what = 1);
-void playback(vector <string>names, int play_num);
-void shuffle(vector<string>ToShuffle);
-void check_order(int &i, vector<string> playing);
-void Read_MetaData();
-void sorting();
-void find(int choice);
-int begin(bool first);
-void decision(int x);
-void View_all(int x);
-void search();
-void rate(int x, string name);
-void Low_Rating(int x, string name);
-void READ_RATING();
-
-void search_display(string searched, int choice, int year = 0);
+void users_login();
+void create_user();
 void save_users();
 void read_users();
-void create_user();
 void Authenticate();
 void read_data();
 void save_data();
@@ -86,768 +36,127 @@ fstream fs;
 ofstream ofs;
 ifstream ifs;
 
-
 int main()
 {
-	// Welcome to main 
-	read_users();
-	read_data();
-	if (numUser == 0)
-	{
-		create_user();
-	}
-	else
-	{
-		cout << "Login press 1,Sign up press 2";
-	}
-	char x;
-	cin >> x;
-	if (x == 1)
-	{
-		Authenticate();
-	}
-	if (x == 2)
-	{
-		create_user();
-		Authenticate();
-	}
+    songs.push_back("abc");
+    songs.push_back("klm");
+    songs.push_back("xyz");
+    users_login();
+    cout<<song_data[2].rating<<endl;
 
-	bool first = true;
-	get_all_files_names_within_folder(directory);
-	Read_MetaData();
-	READ_RATING();
-	while (true)
-	{
-		system("cls");
-		decision(begin(first));
-		if (quit)
-			break;
-		first = false;
-	}
-	return 0;
+
+
+    return 0;
 }
 
-
-int begin(bool first)
+void users_login()
 {
-	if (first) {
-		cout << "Welcome in Kojack Player Thanks for using me " << endl;
-		first = false;
-	}
-	cout << "Press \n1 to view all songs in the system" << endl;
-	cout << "2 to view all artists in the system\n3 to view all genres in the system" << endl;
-	cout << "4 to view all albums in the system \n5 to search" << endl;
-	if (!shufflle)
-		cout << "6 To enable Shuffle" << endl;
-	else
-		cout << "6 To disable Shuffle" << endl;
-	int x;
-	cin >> x;
-	system("cls");
-	return x;
+    read_users();
+    read_data();
+    cout<<"Press\n1 to create\n2 to login\n";
+    int x;cin>>x;
+    if(x==1)
+    {
+        create_user();
+        save_users();
+        save_data();
+    }
+    else if(x==2)
+    {
+        Authenticate();
+    }
 }
 
-void decision(int choice)
-{
-	switch (choice) {
-	case 1:
-		list_display(songs, 0);
-		break;
-	case 2:
-		View_all(1);
-		break;
-	case 3:
-		View_all(2);
-		break;
-	case 4:
-		View_all(3);
-		break;
-	case 5:
-		search();
-		break;
-	case 6:
-		if (shufflle)
-			shufflle = false;
-		else
-		{
-			shufflle = true;
-		}
-		break;
-	}
-}
-
-void View_all(int choice)
-{
-	set<string> ones;
-	vector<string>one;
-	int counter = 0;
-	one.clear();
-	// this switch puts the wanted data in a set and displays it
-	switch (choice)
-	{
-	case 1:
-		for (int i = 0; i < songs.size(); i++) {
-			ones.insert(song_data[i].artist);
-		}
-		for (auto i : ones) {
-			cout << counter + 1 << " ) " << i << endl;
-			one.push_back(i);
-			counter++;
-		}
-		cout << "Please enter the number of the artist you want to View : ";
-		break;
-	case 2:
-		for (int i = 0; i < songs.size(); i++) {
-			ones.insert(song_data[i].genre);
-		}
-		for (auto i : ones) {
-			cout << counter + 1 << " ) " << i << endl;
-			counter++;
-			one.push_back(i);
-		}
-		cout << "Please enter the number of the genre you want to View : ";
-		break;
-	case 3:
-		for (int i = 0; i < songs.size(); i++) {
-			ones.insert(song_data[i].album);
-		}
-		for (auto i : ones) {
-			cout << counter + 1 << " ) " << i << endl;
-			counter++;
-			one.push_back(i);
-		}
-		cout << "Please enter the number of the album you want to View : ";
-		break;
-	}
-
-	int x; cin >> x;
-
-	vector<string>plays;
-	plays.clear();
-	switch (choice)
-	{
-	case 1:
-		for (int i = 0; i < songs.size(); i++)
-		{
-			if (song_data[i].artist == one[x - 1])
-			{
-				plays.push_back(songs[i]);
-			}
-		}
-		break;
-	case 2:
-		for (int i = 0; i < songs.size(); i++)
-		{
-			if (song_data[i].genre == one[x - 1])
-			{
-				plays.push_back(songs[i]);
-			}
-		}
-		break;
-	case 3:
-		for (int i = 0; i < songs.size(); i++)
-		{
-			if (song_data[i].album == one[x - 1])
-			{
-				plays.push_back(songs[i]);
-			}
-		}
-		break;
-
-	}
-	list_display(plays, 1);
-}
-
-void list_display(vector<string> ToPlay, int what)
-{
-	system("cls");
-	int x;
-	for (int i = 0; i < ToPlay.size(); i++)
-	{
-		if (!song_data[i].display)
-			continue;
-		cout << i + 1 << " : " << ToPlay[i] << endl;
-	}
-	cout << endl << endl;
-	if (what == 0)
-	{
-		cout << "Press 1 to Play \nPress 2 to sort the list\nPress 3 to Play certain song (Not available while shuffling)\nPress 4 to Return to Kojack Menu" << endl;
-		cin >> x;
-		switch (x) {
-		case 1:
-			playback(ToPlay, 0);
-			break;
-		case 2:
-			sorting();
-			break;
-		case 3:
-			cout << "Enter song number :";
-			cin >> x;
-			playback(ToPlay, x - 1);
-			break;
-		case 4:
-			break;
-		}
-	}
-	else
-	{
-		cout << "Press 1 to Play \nPress 2 to Play certain song (Not available while shuffling)\nPress 3 to Return to Kojack Menu" << endl;
-		cin >> x;
-		switch (x) {
-		case 1:
-			playback(ToPlay, 0);
-			break;
-		case 2:
-			cout << "Enter song number :";
-			cin >> x;
-			playback(ToPlay, x - 1);
-			break;
-		case 3:
-			break;
-		}
-	}
-
-}
-
-void get_all_files_names_within_folder(string folder)
-{
-	// Reads all .wav files in specific folder
-	string search_path = folder + "/*.*";
-	WIN32_FIND_DATA fd;
-	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
-	if (hFind != INVALID_HANDLE_VALUE)
-	{
-		int i = 0;
-		do
-		{
-			// read all (real) files in current folder
-			// , delete '!' read other 2 default folder . and ..
-			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-			{
-				song_data[i].name = fd.cFileName;
-
-				songs.push_back(fd.cFileName);
-				i++;
-			}
-		} while (::FindNextFile(hFind, &fd));
-		::FindClose(hFind);
-	}
-	for (int i = 0; i < songs.size(); i++)
-	{
-		song_data[i].name = songs[i];
-	}
-}
-
-void READ_RATING()
-{
-	fstream Rating_file;
-	Rating_file.open("Rating.txt");
-	for (int i = 0; i < songs.size(); i++)
-	{
-		Rating_file >> song_data[i].rating;
-		if (song_data[i].rating <= Low_rating_activator && song_data[i].rating > 0)
-		{
-			int counter = 0;
-			song_data[i].display = false;
-			while (true)
-			{
-				if (song_data[i].name == songs[counter])
-				{
-					songs.erase(songs.begin() + counter);
-					break;
-				}
-				counter++;
-			}
-		}
-	}
-	Rating_file.close();
-
-}
-
-/*void playMusic(const std::string& filename, int &play_num)
-{
-	// Load an ogg music file
-	sf::Music music;
-	if (!music.openFromFile(directory + filename))
-		return;
-
-	// Display music informations
-	cout << filename << ":" << std::endl;
-	cout << " " << music.getDuration().asSeconds() << " seconds" << std::endl;
-
-
-
-	// Play it
-	music.play();
-	// Loop while the music is playing
-	cout << "Press p to pause , Press it again to play  \ns to stop  \nb backwards  \nr to Rate  \nm to return to main menu" << endl;
-	/*while (music.getStatus() == sf::Music::Playing || music.getPlayingOffset().asSeconds() < music.getDuration().asSeconds())
-	{
-		// Leave some CPU time for other processes
-		sf::sleep(sf::milliseconds(100));
-		if (music.getPlayingOffset().asSeconds() == music.getDuration().asSeconds())
-			break;
-
-		// Display the playing position
-		std::cout << "\rPlaying... " << music.getPlayingOffset().asSeconds() << " sec        ";
-		std::cout << std::flush;
-
-		if (kbhit())
-		{
-			char x;
-			if (cin >> x)
-			{
-				if (x == 'p' &&  music.getStatus() == sf::Music::Playing)
-					music.pause();
-				else if (x == 'p')
-					music.play();
-				else if (x == 'n')
-				{
-					//next
-					return;
-				}
-				else if (x == 's' && music.getStatus() == sf::Music::Playing)
-				{
-					music.stop();
-				}
-				else if (x == 'b')
-				{
-					//b as in backwards 
-					play_num -= 2;
-					return;
-				}
-				else if (x == 'r')
-				{
-					rate(play_num, filename);
-				}
-				else if (x == 'm')
-				{
-					menu = true;
-					break;
-				}
-
-			}
-		}
-	}
-	std::cout << std::endl << std::endl;
-}*/
-
-
-void search()
-{
-	cout << flush << "Press \n1 To Search by name\n2 To Search by by Album\n3 To search by artist name\n4 To Search by genre\n5 To Search by year\n6 To Return to The Kojack Menu " << endl;
-	int n; cin >> n;
-	switch (n)
-	{
-	case 1:
-		find(n);
-		break;
-	case 2:
-		find(n);
-		break;
-	case 3:
-		find(n);
-		break;
-	case 5:
-		find(n);
-		break;
-	case 6:
-		return;
-	default:
-		cout << "not valid input" << endl;
-		return search();
-		break;
-
-	}
-
-}
-
-
-void find(int choice)
-{
-	bool found = false;
-	string s = "weg";
-	switch (choice) {
-	case 1:
-		cout << "Enter Song Name : ";
-		cin.ignore();
-		getline(cin, s);
-		if (s[0] >= 97 && s[0] <= 122)
-			s[0] -= 32;
-		search_display(s, choice);
-		break;
-	case 2:
-		cout << "Enter Album : ";
-		cin.ignore();
-		getline(cin, s);
-
-		if (s[0] >= 97 && s[0] <= 122)
-			s[0] -= 32;
-		search_display(s, choice);
-		break;
-	case 3:
-		cout << "Enter Artist : ";
-		cin.ignore();
-		getline(cin, s);
-		if (s[0] >= 97 && s[0] <= 122)
-			s[0] -= 32;
-		search_display(s, choice);
-		break;
-	case 4:
-		int year; cin >> year;
-		cout << "Enter Release Year : ";
-		search_display(s, choice, year);
-		break;
-	}
-	if (found == true)
-	{
-
-		cout << "Do You Wish To Play A Song? press '1' if ok else press 2 :";
-		char command; cin >> command;
-		if (command == '1')
-		{
-			cout << "Enter Song Number : ";
-			int sN; cin >> sN;
-			playMusic(song_data[sN].name, sN);
-		}
-	}
-	else
-		cout << "Not Found!";
-}
-
-void search_display(string searched, int choice, int year)
-{
-	vector<string> ToPlay;
-	ToPlay.clear();
-	switch (choice)
-	{
-	case 1:
-		for (int i = 0; i < songs.size(); i++)
-		{
-			if (song_data[i].name.find(searched) < song_data[i].name.size())
-			{
-				ToPlay.push_back(song_data[i].name);
-				found = true;
-			}
-		}
-		break;
-	case 2:
-		for (int i = 0; i < songs.size(); i++)
-		{
-			if (song_data[i].album.find(searched) < song_data[i].album.size())
-			{
-				ToPlay.push_back(song_data[i].name);
-				found = true;
-			}
-		}
-		break;
-	case 3:
-		for (int i = 0; i < songs.size(); i++)
-		{
-			if (song_data[i].artist.find(searched) != -1)
-			{
-				ToPlay.push_back(song_data[i].name);
-				found = true;
-			}
-		}
-		break;
-	case 4:
-		for (int i = 0; i < songs.size(); i++)
-		{
-			if (song_data[i].year == year)
-			{
-				ToPlay.push_back(song_data[i].name);
-				found = true;
-			}
-		}
-		break;
-	}
-	if (found)
-	{
-		list_display(ToPlay);
-	}
-	else {
-		cout << "Not Found" << endl;
-	}
-}
-
-// below here is done
-void sorting()
-{
-	vector<string> names;
-	names.clear();
-	cout << "Enter\n1 to sort high to low\n2 to sort low to high :";
-	int x, counter = 0; cin >> x;
-	system("cls");
-	if (x == 1)
-	{
-		for (int i = 10; i >= 0; i--) {
-			for (int j = 0; j < songs.size(); j++) {
-				if (song_data[j].rating == i) {
-					cout << counter + 1 << " ) " << song_data[j].name << endl;
-					names.push_back(song_data[j].name);
-					counter++;
-				}
-			}
-		}
-	}
-	else if (x == 2)
-	{
-		for (int i = 0; i <= 10; i++) {
-			for (int j = 0; j < songs.size(); j++) {
-				if (song_data[j].rating == i) {
-					cout << counter + 1 << " ) " << song_data[j].name << endl;
-					names.push_back(song_data[j].name);
-					counter++;
-				}
-			}
-		}
-	}
-	cout << endl << endl;
-	cout << "Press 1 to play in this order \nPress 2 to Return to Kojack Menu" << endl;
-	int k; cin >> k;
-	switch (k) {
-	case 1:
-		playback(names, 0);
-		break;
-	case 2:
-		break;
-	}
-}
-
-void rate(int x, string name)
-{
-	int rating;
-	cout << "Enter Rating (1-10):";
-	while (true)
-	{
-		cin >> rating;
-		if (rating > 10 || rating < 0)
-		{
-			cout << "Invalid rating \nEnter Rating :";
-		}
-		else
-		{
-			if (rating <= Low_rating_activator)
-			{
-				Low_Rating(x, name); //playsound !display
-			}
-			break;
-		}
-	}
-	fstream Rating_file;
-	Rating_file.open("Rating.txt");
-	for (int i = 0; i < songs.size(); i++)
-	{
-		if (name == song_data[i].name)
-		{
-			song_data[i].rating = rating;
-			Rating_file << song_data[i].rating << endl;
-		}
-		else
-		{
-			Rating_file << song_data[i].rating << endl;
-		}
-
-	}
-	Rating_file.close();
-}
-
-void Low_Rating(int x, string name)
-{
-	playSound();
-	for (int i = 0; i < songs.size(); i++)
-	{
-		if (name == song_data[i].name)
-		{
-			song_data[i].display = false;
-		}
-	}
-}
-
-void playSound()
-{
-	// Load a sound buffer from a wav file
-	sf::SoundBuffer buffer;
-	if (!buffer.loadFromFile("Tda5ol.wav"))
-		return;
-
-	sf::Sound sound(buffer);
-	sound.play();
-	// Loop while the sound is playing
-	while (sound.getStatus() == sf::Sound::Playing)
-	{
-		// Leave some CPU time for other processes
-		sf::sleep(sf::milliseconds(100));
-	}
-	std::cout << std::endl << std::endl;
-}
-
-void Read_MetaData()
-{
-	fstream fs;
-	fs.open("data.txt");
-	for (int i = 0; i < songs.size(); i++)
-	{
-		getline(fs, song_data[i].artist);
-		getline(fs, song_data[i].genre);
-		getline(fs, song_data[i].album);
-		fs >> song_data[i].year;
-	}
-
-}
-
-void check_order(int &i, vector <string> playing)
-{
-	// the final i in both cases will be incrmented in the for loop in the calling function
-
-	// to play the first song after the last song
-	if (i == playing.size() - 1)
-	{
-		i = -1;
-	}
-	// if you play the previous song while playing the first song in the list the i would be -2 
-	else if (i == -2)
-	{
-		i = playing.size() - 2;
-	}
-}
-
-void playback(vector<string>names, int play_num)
-{
-	system("cls");
-	if (!shufflle) {
-		for (int i = play_num; i < names.size(); i++)
-		{
-			playMusic(names[i], i);
-			check_order(i, names);
-			system("cls");
-			if (menu)
-			{
-				menu = false;
-				return;
-			}
-		}
-	}
-	else {
-		shuffle(names);
-		for (int i = 0; i < names.size(); i++)
-		{
-			playMusic(names[shuffled[i]], i);
-			check_order(i, names);
-			system("cls");
-			if (menu)
-			{
-				menu = false;
-				return;
-			}
-		}
-	}
-}
-
-void shuffle(vector<string>ToShuffle)
-{
-	/* this function shuffles the indecies and put them in array named shuffled
-		then uses the array shuffled as an index to play music from the vector songs */
-	array <int, max_numsongs> shuffled_order = {};
-
-
-	// intializing the array with values from 1 to the number of songs in the folder
-	for (int i = 1; i <= ToShuffle.size(); i++)
-	{
-		shuffled_order[i] = i;
-	}
-	// generating seed used to generate diffrent order every time
-	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-
-	shuffle(shuffled_order.begin(), shuffled_order.end(), default_random_engine(seed));
-
-	for (int i = 0; i < max_numsongs; i++)
-	{
-		if (shuffled_order[i] != 0)
-		{
-			shuffled[counter] = shuffled_order[i] - 1;
-			counter++;
-		}
-	}
-}
-//userfunctions
 void read_users()
 {
-	ifs.open("Users", ios::out);
+	ifs.open("Users.txt", ios::in);
 	ifs >> numUser;
 	for (int i = 1; i <= numUser; i++)
 	{
 		ifs >> user_data[i].order >> user_data[i].name >> user_data[i].password;
 	}
+	ifs.close();
 }
 void create_user()
 {
-	numUser++; 
-	//char x = numUser + 48;
-	//string s = "User"; s += x;
-	ofs.open("DATA", ios::out | ios::trunc);
+    cin.ignore();
+	numUser++;
+	cout<<"*Create User*\n";
 	user_data[numUser].order = numUser;
-	cout << "Enter your data to sign up" << endl;
-	cout << "Enter your user name and password";
-	cin >> user_data[numUser].name >> user_data[numUser].password;
-
-	for (int i = 0; i < songs.size(); i++)
-	{
-		ofs << songs[i] << " " << user_data->rate[songs[i]] << endl;
-	}
-	ofs.close();
+	cout<<"Enter your name:\n";
+	getline(cin,user_data[numUser].name);
+	cout<<"Enter your password:\n";
+	 getline(cin,user_data[numUser].password);
 
 
 }
 void save_users()
 {
-	ofs.open("Users", ios::out | ios::trunc);
-	ofs << numUser << endl;
+	fs.open("Users.txt", ios::out | ios::trunc);
+	fs << numUser<<endl;
 	for (int i = 1; i <= numUser; i++)
 	{
-		ofs << user_data[i].order << " " << user_data[i].name << " " << user_data[i].password << endl;
+		fs << user_data[i].order << "\n" << user_data[i].name << "\n" << user_data[i].password << endl;
 	}
-}
-void save_data()
-{
-
-	ofs.open("UsersData", ios::out | ios::trunc);
-	for (int i = 1; i <= numUser; i++)
-	{
-		ofs << i << endl;
-		for (int i = 0; i < songs.size(); i++)
-		{
-			ofs << songs[i] << " " << user_data->rate[songs[i]] << endl;
-		}
-		ofs << endl;
-	}
-	ofs.close();
+	fs.close();
 }
 void Authenticate()
 {
+    cout<<"*Authenticate*\n";
 	cout << "Enter User Name: " << endl;
 	bool f = false;
 	string n, p; cin >> n;
-	for (int i = 0; i < numUser; i++)
+	for (int i = 0; i <= numUser; i++)
 	{
 		if (user_data[i].name == n)
 		{
 			f = true;
 			cout << "Enter your password: " << endl;
 			cin >> p;
-			if (p == user_data[i].password)
+
+			for(int j=0;j<songs.size();j++)
+            {
+                song_data[j].rating=user_data[i].rate[songs[j]];
+            }
+
+			/*if (p == user_data[i].password)
 			{
-				cout << "WELCOME " << user_data[i].name << endl;
-				for (int j = 0; j < songs.size(); j++)
-				{
-					song_data[j].rating = user_data[i].rate[songs[i]];
-				}
-			}
+				cout << "WELCOME " << user_data[i].name<<endl;
+			}*/
 		}
 	}
-	if (f == false)
+	if(f==false)
+        cout<<"NOTFOUND!";
+}
+void read_data()
+{
+    ifs.open("UsersData.txt", ios::in);
+    string s;int x,n;
+    ifs>>numUser;
+    for(int i=1;i<=numUser;i++)
+    {
+        ifs>>user_data[i].order;
+        for(int j=0;j<songs.size();j++)
+        {
+            ifs>>s;ifs>>x;
+            user_data[i].rate[s]=x;
+        }
+    }
+    ifs.close();
+}
+void save_data()
+{
+
+	ofs.open("UsersData.txt", ios::out | ios::trunc);
+	ofs<<numUser<<endl;
+	for (int j = 1; j <= numUser; j++)
 	{
-		cout << "Not Found" << endl;
+		ofs << j << endl;
+		for (int i = 0; i < songs.size(); i++)
+		{
+			ofs << songs[i] << " " << user_data[j].rate[songs[i]] << endl;
+		}
+		ofs << endl;
 	}
+	ofs.close();
 }
