@@ -310,7 +310,7 @@ void READ_RATING()
 
 void album_tab(sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::Event& event , string& mod) {
 	window.clear();
-
+	
 	sf::RectangleShape back_pic;
 	sf::Texture background_texture;
 	sf::RectangleShape play_button;
@@ -388,7 +388,7 @@ void album_tab(sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::Eve
 
 
 	songs_list.setSize(sf::Vector2f(200, 50));
-	//songs_list.setFillColor(sf::Color::Magenta);
+	
 	songs_list.setPosition(0, 0);
 	song_pic.loadFromFile("songs 200  unpressed.png");
 	songs_list.setTexture(&song_pic);
@@ -398,9 +398,9 @@ void album_tab(sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::Eve
 
 
 	artist_list.setSize(sf::Vector2f(200, 50));
-	artist_list.setFillColor(sf::Color::Yellow);
+	
 	artist_list.setPosition(200, 0);
-	artist_pic.loadFromFile("images (2).png");
+	artist_pic.loadFromFile("artists unpressed.png");
 	artist_list.setTexture(&artist_pic);
 	artist_sprite.setTexture(artist_pic);
 	artist_sprite.setPosition(200, 0);
@@ -411,7 +411,7 @@ void album_tab(sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::Eve
 
 	album_list.setSize(sf::Vector2f(200, 50));
 	album_list.setPosition(400, 0);
-	album_pic.loadFromFile("download.png");
+	album_pic.loadFromFile("albums pressed.png");
 	album_list.setTexture(&album_pic);
 	album_sprite.setTexture(album_pic);
 	album_sprite.setPosition(400, 0);
@@ -419,9 +419,12 @@ void album_tab(sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::Eve
 
 
 	genre_list.setSize(sf::Vector2f(200, 50));
-	genre_list.setFillColor(sf::Color::Cyan);
+	
 	genre_list.setPosition(600, 0);
-	genre_pic.loadFromFile("images.png");
+	genre_pic.loadFromFile("genres unpressed.png");
+	genre_list.setTexture(&genre_pic); 
+	genre_sprite.setTexture(genre_pic);
+	genre_sprite.setPosition(600, 0);
 
 
 
@@ -443,9 +446,12 @@ void album_tab(sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::Eve
 	window.draw(backward_button);
 	window.draw(forward_button);
 	window.draw(play_button);
+
+
 	if (focus(album_sprite.getGlobalBounds() , mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "songs";
+			
 		}
 	}
 
