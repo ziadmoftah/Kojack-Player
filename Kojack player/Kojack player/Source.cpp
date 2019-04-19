@@ -64,7 +64,7 @@ int main() {
 
 
 
-	string mod = "album";
+	string mod = "song";
 	sf::Vector2f mouse_position;
 	while (window.isOpen())
 	{
@@ -77,7 +77,7 @@ int main() {
 			}
 			mouse_position.x = sf::Mouse::getPosition(window).x;
 			mouse_position.y = sf::Mouse::getPosition(window).y;
-			if (mod == "songs") {
+			if (mod == "song") {
 				window.clear();
 				song_tab(window , mouse_position , event , mod );
 			}
@@ -92,6 +92,7 @@ int main() {
 			}
 			if (mod == "genre") {
 				window.clear();
+				genre_tab(window, mouse_position, event, mod);
 			}
 			window.display();
 		}
@@ -139,9 +140,31 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	sf::RectangleShape artist_list;
 	sf::RectangleShape album_list;
 	sf::RectangleShape genre_list;
-	
+	sf::Texture album_pic;
+	sf::Sprite album_sprite;
+	sf::Texture genre_pic;
+	sf::Sprite genre_sprite;
+	sf::Texture song_pic;
+	sf::Sprite song_sprite;
+	sf::Texture artist_pic;
+	sf::Sprite artist_sprite;
+	sf::RectangleShape search_box;
+	sf::Texture search_pic; 
+	sf::Sprite search_sprite; 
+	sf::Text seacr_text;
 
-	play_button.setSize(sf::Vector2f(75 , 75));
+
+	search_box.setSize(sf::Vector2f(250, 40)); 
+	search_box.setPosition(520, 75);
+	//search_pic.loadFromFile("");
+	search_box.setTexture(&search_pic);
+	search_sprite.setTexture(search_pic);
+	search_sprite.setPosition(520, 75);
+
+
+
+
+	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
 	play_button.setPosition(400, 540);
 	play_pic.loadFromFile("pause-play.png");
@@ -190,28 +213,47 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	songs_list.setSize(sf::Vector2f(200, 50));
-	songs_list.setFillColor(sf::Color::Magenta);
+
 	songs_list.setPosition(0, 0);
+	song_pic.loadFromFile("songs  pressed.png");
+	songs_list.setTexture(&song_pic);
+	song_sprite.setTexture(song_pic);
+	song_sprite.setPosition(0, 0);
+
 
 
 	artist_list.setSize(sf::Vector2f(200, 50));
-	artist_list.setFillColor(sf::Color::Yellow);
+
 	artist_list.setPosition(200, 0);
+	artist_pic.loadFromFile("artists unpressed.png");
+	artist_list.setTexture(&artist_pic);
+	artist_sprite.setTexture(artist_pic);
+	artist_sprite.setPosition(200, 0);
+
+
+
 
 
 	album_list.setSize(sf::Vector2f(200, 50));
-	album_list.setFillColor(sf::Color::Blue);
 	album_list.setPosition(400, 0);
+	album_pic.loadFromFile("albums unpressed.png");
+	album_list.setTexture(&album_pic);
+	album_sprite.setTexture(album_pic);
+	album_sprite.setPosition(400, 0);
 
 
 
 	genre_list.setSize(sf::Vector2f(200, 50));
-	genre_list.setFillColor(sf::Color::Cyan);
+
 	genre_list.setPosition(600, 0);
+	genre_pic.loadFromFile("genres unpressed.png");
+	genre_list.setTexture(&genre_pic);
+	genre_sprite.setTexture(genre_pic);
+	genre_sprite.setPosition(600, 0);
 
 
 
-	
+
 
 	back_pic.setSize(sf::Vector2f(800.0f, 600.0f));
 	background_texture.loadFromFile("wallpaper dark final final.png");
@@ -229,6 +271,25 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	window.draw(backward_button);
 	window.draw(forward_button);
 	window.draw(play_button);
+	window.draw(search_box);
+	if (focus(album_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "album";
+
+		}
+	}
+	if (focus(genre_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "genre";
+
+		}
+	}
+	if (focus(artist_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "artist";
+
+		}
+	}
 
 }
 
@@ -448,10 +509,22 @@ void album_tab(sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::Eve
 	window.draw(play_button);
 
 
-	if (focus(album_sprite.getGlobalBounds() , mouse_position)) {
+	if (focus(song_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-			mod = "songs";
-			
+			mod = "song";
+
+		}
+	}
+	if (focus(genre_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "genre";
+
+		}
+	}
+	if (focus(artist_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "artist";
+
 		}
 	}
 
@@ -481,6 +554,13 @@ void artist_tab( sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::E
 	sf::RectangleShape genre_list;
 	sf::Texture album_pic;
 	sf::Sprite album_sprite;
+	sf::Texture genre_pic;
+	sf::Sprite genre_sprite;
+	sf::Texture song_pic;
+	sf::Sprite song_sprite;
+	sf::Texture artist_pic;
+	sf::Sprite artist_sprite;
+
 
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
@@ -531,21 +611,30 @@ void artist_tab( sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::E
 
 
 	songs_list.setSize(sf::Vector2f(200, 50));
-	songs_list.setFillColor(sf::Color::Magenta);
+
 	songs_list.setPosition(0, 0);
-	
+	song_pic.loadFromFile("songs 200  unpressed.png");
+	songs_list.setTexture(&song_pic);
+	song_sprite.setTexture(song_pic);
+	song_sprite.setPosition(0, 0);
+
 
 
 	artist_list.setSize(sf::Vector2f(200, 50));
-	artist_list.setFillColor(sf::Color::Yellow);
+
 	artist_list.setPosition(200, 0);
+	artist_pic.loadFromFile("artists pressed.png");
+	artist_list.setTexture(&artist_pic);
+	artist_sprite.setTexture(artist_pic);
+	artist_sprite.setPosition(200, 0);
+
 
 
 
 
 	album_list.setSize(sf::Vector2f(200, 50));
 	album_list.setPosition(400, 0);
-	album_pic.loadFromFile("download.png");
+	album_pic.loadFromFile("albums unpressed.png");
 	album_list.setTexture(&album_pic);
 	album_sprite.setTexture(album_pic);
 	album_sprite.setPosition(400, 0);
@@ -553,8 +642,12 @@ void artist_tab( sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::E
 
 
 	genre_list.setSize(sf::Vector2f(200, 50));
-	genre_list.setFillColor(sf::Color::Cyan);
+
 	genre_list.setPosition(600, 0);
+	genre_pic.loadFromFile("genres unpressed.png");
+	genre_list.setTexture(&genre_pic);
+	genre_sprite.setTexture(genre_pic);
+	genre_sprite.setPosition(600, 0);
 
 
 
@@ -576,6 +669,25 @@ void artist_tab( sf::RenderWindow& window , sf::Vector2f& mouse_position , sf::E
 	window.draw(backward_button);
 	window.draw(forward_button);
 	window.draw(play_button);
+
+	if (focus(album_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "album";
+
+		}
+	}
+	if (focus(genre_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "genre";
+
+		}
+	}
+	if (focus(song_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "song";
+
+		}
+	}
 }
 
 
@@ -603,6 +715,13 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	sf::RectangleShape genre_list;
 	sf::Texture album_pic;
 	sf::Sprite album_sprite;
+	sf::Texture genre_pic;
+	sf::Sprite genre_sprite;
+	sf::Texture song_pic;
+	sf::Sprite song_sprite;
+	sf::Texture artist_pic;
+	sf::Sprite artist_sprite;
+
 
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
@@ -650,21 +769,33 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 
 
+
+
 	songs_list.setSize(sf::Vector2f(200, 50));
-	songs_list.setFillColor(sf::Color::Magenta);
+
 	songs_list.setPosition(0, 0);
+	song_pic.loadFromFile("songs 200  unpressed.png");
+	songs_list.setTexture(&song_pic);
+	song_sprite.setTexture(song_pic);
+	song_sprite.setPosition(0, 0);
+
 
 
 	artist_list.setSize(sf::Vector2f(200, 50));
-	artist_list.setFillColor(sf::Color::Yellow);
+
 	artist_list.setPosition(200, 0);
+	artist_pic.loadFromFile("artists unpressed.png");
+	artist_list.setTexture(&artist_pic);
+	artist_sprite.setTexture(artist_pic);
+	artist_sprite.setPosition(200, 0);
+
 
 
 
 
 	album_list.setSize(sf::Vector2f(200, 50));
 	album_list.setPosition(400, 0);
-	album_pic.loadFromFile("download.png");
+	album_pic.loadFromFile("albums unpressed.png");
 	album_list.setTexture(&album_pic);
 	album_sprite.setTexture(album_pic);
 	album_sprite.setPosition(400, 0);
@@ -672,8 +803,12 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 
 	genre_list.setSize(sf::Vector2f(200, 50));
-	genre_list.setFillColor(sf::Color::Cyan);
+
 	genre_list.setPosition(600, 0);
+	genre_pic.loadFromFile("genres  pressed.png");
+	genre_list.setTexture(&genre_pic);
+	genre_sprite.setTexture(genre_pic);
+	genre_sprite.setPosition(600, 0);
 
 
 
@@ -695,4 +830,24 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	window.draw(backward_button);
 	window.draw(forward_button);
 	window.draw(play_button);
+
+	if (focus(album_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "album";
+
+		}
+	}
+	if (focus(song_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "song";
+
+		}
+	}
+	if (focus(artist_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			mod = "artist";
+
+		}
+	}
+
 }
