@@ -1,0 +1,83 @@
+void wpage(sf::RenderWindow& window);
+
+
+
+sf::Vector2f mouse_position;
+	string mod = "welcome";
+
+	sf::RenderWindow starting_window(sf::VideoMode(600, 300), "Kojack Player", sf::Style::Default);
+	while (starting_window.isOpen())
+	{
+		sf::Event starting;
+		while (starting_window.pollEvent(starting))
+		{
+			if (starting.type == sf::Event::Closed) {
+				starting_window.close();
+			}
+			mouse_position.x = sf::Mouse::getPosition(starting_window).x;
+			mouse_position.y = sf::Mouse::getPosition(starting_window).y;
+
+			//if (mod == "welcome")
+			//{
+				starting_window.clear();
+				wpage(starting_window);
+			//}
+
+		starting_window.display();
+		starting_window.clear();
+
+		}
+
+	}
+
+
+
+
+
+
+
+void wpage(sf::RenderWindow& window)
+{
+	window.clear();
+	sf::RectangleShape back_pic;
+	sf::Texture background_texture;
+	sf::RectangleShape login_button;
+	sf::Texture login_texture;
+	sf::RectangleShape sign_button;
+	sf::Texture sign_texture;
+	sf::Sprite loginsprite;
+	sf::Sprite signsprite;
+
+	login_button.setSize(sf::Vector2f(165, 96));
+	login_button.setOrigin(85, 143);
+	login_button.setPosition(263, 244);
+	login_texture.loadFromFile("login button.png");
+	login_button.setTexture(&login_texture);
+	loginsprite.setTexture(login_texture);
+	loginsprite.setOrigin(85, 143);
+	loginsprite.setPosition(263, 244);
+
+
+	sign_button.setSize(sf::Vector2f(165, 96));
+	sign_button.setOrigin(83, 143);
+	sign_button.setPosition(100, 244);
+	sign_texture.loadFromFile("sign up.png");
+	sign_button.setTexture(&sign_texture);
+	signsprite.setTexture(sign_texture);
+	signsprite.setOrigin(83, 143);
+	signsprite.setPosition(100, 244);
+
+
+	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
+	background_texture.loadFromFile("welcoming page clean.png");
+	if (!background_texture.loadFromFile("welcoming page clean.png")) {
+		cout << "error while loading the background";
+	}
+	back_pic.setTexture(&background_texture);
+
+	window.draw(back_pic);
+	window.draw(login_button);
+	window.draw(sign_button);
+
+
+
