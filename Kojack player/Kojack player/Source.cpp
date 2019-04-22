@@ -40,7 +40,8 @@ vector<string> songs;
 
 
 
-
+void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position);
+void datapage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position);
 bool focus(sf::FloatRect sprite, sf::Vector2f mouse_position);
 void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod);
 void get_all_files_names_within_folder(string folder);
@@ -56,14 +57,57 @@ void playMusic(const std::string& filename, int &play_num, sf::Vector2f& mouse_p
 	, sf::Sprite& backward_sprite, sf::Sprite& shuffle_sprite);
 
 int main() {
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Kojack Player", sf::Style::Default);
 	get_all_files_names_within_folder(directory);
+
+
+	sf::Vector2f mouse_position;
+	string mod = "welcome";
+
+	sf::RenderWindow starting_window(sf::VideoMode(600, 300), "Kojack Player", sf::Style::Default);
+	while (starting_window.isOpen())
+	{
+		sf::Event starting;
+		while (starting_window.pollEvent(starting))
+		{
+			if (starting.type == sf::Event::Closed) {
+				starting_window.close();
+			}
+			mouse_position.x = sf::Mouse::getPosition(starting_window).x;
+			mouse_position.y = sf::Mouse::getPosition(starting_window).y;
+
+			if (mod == "welcome")
+			{
+				starting_window.clear();
+				wpage(starting_window, starting, mod, mouse_position);
+				
+
+			}
+			if (mod == "login")
+			{
+				starting_window.clear();
+				datapage(starting_window, starting, mod, mouse_position);
+
+			}
+			if (mod == "sign up")
+			{
+				starting_window.clear();
+				datapage(starting_window, starting, mod, mouse_position);
+
+			}
+
+			starting_window.display();
+			starting_window.clear();
+
+		}
+	}
+
+
+
 	Read_MetaData();
 	READ_RATING();
-
-
-	string mod = "song";
-	sf::Vector2f mouse_position;
+	sf::RenderWindow window(sf::VideoMode(800, 600), "Kojack Player", sf::Style::Default);
+	mod = "song";
+	
 	cout << songs.size() << endl;
 	while (window.isOpen())
 	{
@@ -79,7 +123,7 @@ int main() {
 			//cout << mouse_position.x << "\t" << mouse_position.y << endl;
 			if (mod == "song") {
 				window.clear();
-				song_tab(window, mouse_position, event, mod);
+				song_tab(window, mouse_position , event , mod);
 			}
 			if (mod == "album") {
 				window.clear();
@@ -248,7 +292,6 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	songs_list.setSize(sf::Vector2f(200, 50));
-
 	songs_list.setPosition(0, 0);
 	song_pic.loadFromFile("songs  pressed.png");
 	songs_list.setTexture(&song_pic);
@@ -359,8 +402,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	////////play button pressing
 	if (focus(play_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-
-
+			
 		}
 	}
 
@@ -396,7 +438,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left)
 			{
 
-				playMusic(songs[i], i , mouse_position , play_sprite , event , window  , backward_sprite , forward_sprite , shuffle_sprite);
+				playMusic(songs[i], i , mouse_position , play_sprite , event , window  , forward_sprite , backward_sprite , shuffle_sprite);
 				
 			}
 		}
@@ -1211,4 +1253,132 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 		}
 	}
+}
+
+
+
+
+
+void datapage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position)
+{
+	window.clear();
+	sf::RectangleShape back_pic;
+	sf::Texture background_texture;
+	sf::RectangleShape done_button;
+	sf::Texture done_texture;
+	sf::Sprite donesprite;
+
+	done_button.setSize(sf::Vector2f(165, 96));
+	done_button.setOrigin(85, 143);
+	done_button.setPosition(300, 375);
+	done_texture.loadFromFile("done button - Copy.png");
+	done_button.setTexture(&done_texture);
+	donesprite.setTexture(done_texture);
+	donesprite.setOrigin(85, 143);
+	donesprite.setPosition(300, 375);
+
+
+	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
+	background_texture.loadFromFile("datawindow - Copy.png");
+	if (!background_texture.loadFromFile("datawindow - Copy.png")) {
+		cout << "error while loading the background";
+	}
+	back_pic.setTexture(&background_texture);
+
+	window.draw(back_pic);
+	window.draw(done_button);
+
+	if (focus(done_button.getGlobalBounds(), mouse_position))
+	{
+		if (event.type == sf::Event::MouseButtonPressed &&event.mouseButton.button == sf::Mouse::Left)
+		{
+			window.close();
+		}
+	}
+}
+
+
+void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position)
+{
+	window.clear();
+	sf::RectangleShape back_pic;
+	sf::Texture background_texture;
+	sf::RectangleShape login_button;
+	sf::Texture login_texture;
+	sf::RectangleShape sign_button;
+	sf::Texture sign_texture;
+	sf::Sprite loginsprite;
+	sf::Sprite signsprite;
+
+	login_button.setSize(sf::Vector2f(165, 96));
+	login_button.setOrigin(85, 143);
+	login_button.setPosition(263, 244);
+	login_texture.loadFromFile("login button.png");
+	login_button.setTexture(&login_texture);
+	loginsprite.setTexture(login_texture);
+	loginsprite.setOrigin(85, 143);
+	loginsprite.setPosition(263, 244);
+
+
+	sign_button.setSize(sf::Vector2f(165, 96));
+	sign_button.setOrigin(83, 143);
+	sign_button.setPosition(100, 244);
+	sign_texture.loadFromFile("sign up.png");
+	sign_button.setTexture(&sign_texture);
+	signsprite.setTexture(sign_texture);
+	signsprite.setOrigin(83, 143);
+	signsprite.setPosition(100, 244);
+
+
+	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
+	background_texture.loadFromFile("welcoming page clean.png");
+	if (!background_texture.loadFromFile("welcoming page clean.png")) {
+		cout << "error while loading the background";
+	}
+	back_pic.setTexture(&background_texture);
+
+	window.draw(back_pic);
+	window.draw(login_button);
+	window.draw(sign_button);
+
+	if (focus(login_button.getGlobalBounds(), mouse_position))
+	{
+		if (event.type == sf::Event::MouseButtonPressed &&event.mouseButton.button == sf::Mouse::Left)
+		{
+			mod = "login";
+		}
+	}
+
+	if (focus(sign_button.getGlobalBounds(), mouse_position))
+	{
+		if (event.type == sf::Event::MouseButtonPressed &&event.mouseButton.button == sf::Mouse::Left)
+		{
+			mod = "sign up";
+		}
+	}
+	
+
+
+
+
+	//////////////////////////////// name to be entered /////////////////// / / / / / / * * * 8* /- *8 65 43 63 132 132 
+	string name = ""; 
+	sf::Text username;
+	sf::Font font; 
+	username.setPosition(200, 200); 
+	username.setCharacterSize(24); 
+	font.loadFromFile("Roboto-ThinItalic.ttf");
+	username.setFont(font); 
+	if (event.type == sf::Event::TextEntered) {
+		if (event.text.unicode < 128 && event.text.unicode != 8) {
+			name += event.text.unicode;
+			username.setString(name); 
+		}
+		if (event.text.unicode == 8) {
+			name.erase(name.begin() + (name.size() - 1)); 
+			username.setString(name);
+		}
+	}
+	window.draw(username); 
+
 }
