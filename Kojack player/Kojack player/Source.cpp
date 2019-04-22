@@ -40,7 +40,7 @@ struct song
 struct user
 {
 	string name;
-	string passwrod;
+	string password;
 }users_data[10];
 int NumUsers = 0;
 
@@ -234,7 +234,7 @@ void read_users()
 	for (int i = 0; i < NumUsers; i++)
 	{
 		getline(users, users_data[i].name);
-		getline(users, users_data[i].passwrod);
+		getline(users, users_data[i].password);
 	}
 
 }
@@ -270,7 +270,7 @@ void login()
 			{
 				cout << "\nPassword : ";
 				cin >> password;
-				if (password == users_data[i].passwrod)
+				if (password == users_data[i].password)
 				{
 					Logedin = true;
 					break;
@@ -324,7 +324,7 @@ void signup()
 		for (int i = 0; i < NumUsers; i++)
 		{
 			users << users_data[i].name << endl;
-			users << users_data[i].passwrod << endl;
+			users << users_data[i].password << endl;
 		}
 	}
 	current_user = username;
@@ -628,78 +628,48 @@ void View_all(int choice)
 	vector<string>one;
 	int counter = 0;
 	one.clear();
-	// this switch puts the wanted data in a set and displays it
-	switch (choice)
-	{
-	case 1:
-		for (int i = 0; i < songs.size(); i++) {
+	
+	for (int i = 0; i < songs.size(); i++) {
+		if (choice == 1)
 			ones.insert(song_data[i].artist);
-		}
-		for (auto i : ones) {
-			cout << counter + 1 << " ) " << i << endl;
-			one.push_back(i);
-			counter++;
-		}
-		cout << "Please enter the number of the artist you want to View : ";
-		break;
-	case 2:
-		for (int i = 0; i < songs.size(); i++) {
+		else if (choice == 2 )
 			ones.insert(song_data[i].genre);
-		}
-		for (auto i : ones) {
-			cout << counter + 1 << " ) " << i << endl;
-			counter++;
-			one.push_back(i);
-		}
-		cout << "Please enter the number of the genre you want to View : ";
-		break;
-	case 3:
-		for (int i = 0; i < songs.size(); i++) {
+		else if (choice == 3 )
 			ones.insert(song_data[i].album);
-		}
-		for (auto i : ones) {
-			cout << counter + 1 << " ) " << i << endl;
-			counter++;
-			one.push_back(i);
-		}
-		cout << "Please enter the number of the album you want to View : ";
-		break;
+	}
+	for (auto i : ones) {
+		cout << counter + 1 << " ) " << i << endl;
+		one.push_back(i);
+		counter++;
 	}
 
 	int x; cin >> x;
 
 	vector<string>plays;
 	plays.clear();
-	switch (choice)
+	for (int i = 0; i < songs.size(); i++)
 	{
-	case 1:
-		for (int i = 0; i < songs.size(); i++)
+		if(choice == 1 )
 		{
 			if (song_data[i].artist == one[x - 1])
-			{
+			{	
 				plays.push_back(songs[i]);
 			}
 		}
-		break;
-	case 2:
-		for (int i = 0; i < songs.size(); i++)
+		else if (choice == 2)
 		{
 			if (song_data[i].genre == one[x - 1])
 			{
 				plays.push_back(songs[i]);
 			}
 		}
-		break;
-	case 3:
-		for (int i = 0; i < songs.size(); i++)
+		else if (choice == 3)
 		{
 			if (song_data[i].album == one[x - 1])
 			{
 				plays.push_back(songs[i]);
 			}
 		}
-		break;
-
 	}
 	list_display(plays, 1);
 }
