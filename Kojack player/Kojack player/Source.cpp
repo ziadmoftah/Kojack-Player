@@ -220,7 +220,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	float x = 55;
 	for (int i = 0; i < songs.size(); ++i) {
 
-		music_box[i].setSize(Vector2f(200, 30));
+		music_box[i].setSize(Vector2f(400, 30));
 		music_box[i].setPosition(3, x);
 		music_box[i].setFillColor(Color::Transparent);
 		name_music[i].setFont(use_font);
