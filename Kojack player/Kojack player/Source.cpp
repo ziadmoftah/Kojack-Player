@@ -60,9 +60,9 @@ void datapage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vecto
 bool focus(sf::FloatRect sprite, sf::Vector2f mouse_position);
 void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing);
 void get_all_files_names_within_folder(string folder);
-void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod);
-void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod);
-void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod);
+void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing);
+void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing);
+void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing);
 void playMusic(const std::string& filename, int &play_num , bool& playing ,  sf::Music& music);
 void read_users();
 void signup();
@@ -141,16 +141,16 @@ int main() {
 			}
 			if (mod == "album") {
 				window.clear();
-				album_tab(window, mouse_position, event, mod);
+				album_tab(window, mouse_position, event, mod , music , playing);
 			}
 			if (mod == "artist") {
 				window.clear();
-				artist_tab(window, mouse_position, event, mod);
+				artist_tab(window, mouse_position, event, mod , music , playing);
 
 			}
 			if (mod == "genre") {
 				window.clear();
-				genre_tab(window, mouse_position, event, mod);
+				genre_tab(window, mouse_position, event, mod , music , playing);
 			}
 			window.display();
 		}
@@ -520,7 +520,7 @@ void get_all_files_names_within_folder(string folder)
 
 
 
-void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod) {
+void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing) {
 	window.clear();
 
 	sf::RectangleShape back_pic;
@@ -737,13 +737,50 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 		}
 	}
 
+	////////play button pressing
+	if (focus(play_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			if (playing == true) {
+				music.pause();
+				playing = false;
+			}
+			else {
+				music.play();
+				playing = true;
+
+			}
+		}
+	}
 
 
+	/////// enabling shuffle 
+	if (focus(shuffle_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
+
+	///////// backward button pressing
+	if (focus(backward_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
+
+	///////// forward button pressing 
+	if (focus(forward_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
 
 }
 
 
-void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod) {
+void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing) {
 	window.clear();
 
 	sf::RectangleShape back_pic;
@@ -965,11 +1002,53 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 
 		}
 	}
+
+
+
+	////////play button pressing
+	if (focus(play_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			if (playing == true) {
+				music.pause();
+				playing = false;
+			}
+			else {
+				music.play();
+				playing = true;
+
+			}
+		}
+	}
+
+
+	/////// enabling shuffle 
+	if (focus(shuffle_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
+
+	///////// backward button pressing
+	if (focus(backward_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
+
+	///////// forward button pressing 
+	if (focus(forward_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
 }
 
 
 
-void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod) {
+void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing) {
 	window.clear();
 
 	sf::RectangleShape back_pic;
@@ -1178,6 +1257,15 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	}
 
 
+	/////// search button pressing
+	if (focus(search_sprite.getGlobalBounds(), mouse_position) && mouse_position.x < 560) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
+
+
 	//////////////string to search for 
 	if (focus(search_sprite.getGlobalBounds(), mouse_position) && mouse_position.x < 560) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
@@ -1185,8 +1273,50 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 		}
 	}
-}
 
+
+
+	////////play button pressing
+	if (focus(play_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			if (playing == true) {
+				music.pause();
+				playing = false;
+			}
+			else {
+				music.play();
+				playing = true;
+
+			}
+		}
+	}
+
+
+	/////// enabling shuffle 
+	if (focus(shuffle_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
+
+	///////// backward button pressing
+	if (focus(backward_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
+
+	///////// forward button pressing 
+	if (focus(forward_sprite.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+
+
+		}
+	}
+
+}
 
 
 
@@ -1490,3 +1620,5 @@ vector<string> View_all(int choice)
 	
 	return to_be_shown; 
 }
+
+
