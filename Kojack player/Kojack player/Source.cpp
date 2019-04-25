@@ -18,10 +18,10 @@
 #define users_directory "C:\\Users\\Owner\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\Data/" 
 #define max_numsongs 10000
 #define Low_rating_activator 3
+#define Highest_rating 10
 
 using namespace std;
 
-bool quit = false;
 bool menu = false;
 bool found;
 string current_user;
@@ -50,6 +50,7 @@ bool shufflle = false;
 
 vector<string> underrated_songs;
 vector<string> songs;
+
 void get_all_files_names_within_folder(string folder);
 void playMusic(const string& filename, int &play_num);
 void list_display(vector<string> ToPlay, int what = 1);
@@ -89,9 +90,7 @@ int main()
 	{
 		system("cls");
 		decision(main_menu(first));
-		if (quit)
-			break;
-		first = false;
+		menu = false; 
 	}
 	return 0;
 }
@@ -154,7 +153,7 @@ void decision(int choice)
 void get_all_files_names_within_folder(string folder)
 {
 	// Reads all .wav files in specific folder
-		int i = 0;
+	int i = 0;
 	string search_path = folder + "/*.*";
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
@@ -167,6 +166,7 @@ void get_all_files_names_within_folder(string folder)
 			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
 				song_data[i].name = fd.cFileName;
+				// erases .wav from songs title 
 				song_data[i].name.erase(song_data[i].name.end() - 4, song_data[i].name.end());
 				songs.push_back( song_data[i].name);
 				i++;
@@ -187,7 +187,6 @@ void Read_MetaData()
 		getline(fs, song_data[i].album);
 		fs >> song_data[i].year;
 	}
-	system("pause");
 }
 
 void READ_RATING()
@@ -238,15 +237,20 @@ void read_users()
 void begin()
 {
 	cout << "Press \n1 to Login \n2 to Sign up " << endl;
-	int choice; cin >> choice;
+	char choice; 
+	cin >> choice;
 	switch (choice)
 	{
-	case 1:
+	case '1':
 		login();
 		break;
-	case 2:
+	case '2':
 		signup();
 		break;
+	default :
+		system("cls");
+		cout << "Invalid input" << endl;
+		return begin();
 	}
 
 	system("cls");
@@ -337,11 +341,11 @@ void signup()
 void rate(int x, string name)
 {
 	int rating;
-	cout << "Enter Rating (1-10):";
+	cout << "Enter Rating (1-"<<Highest_rating<<") :";
 	while (true)
 	{
 		cin >> rating;
-		if (rating > 10 || rating < 0)
+		if (rating > Highest_rating || rating < 0)
 		{
 			cout << "Invalid rating \nEnter Rating :";
 		}
@@ -445,7 +449,7 @@ void search_display(string searched, int choice, int year)
 
 void search()
 {
-	cout << flush << "Press \n1 To Search by name\n2 To Search by by Album\n3 To search by artist name\n4 To Search by genre\n5 To Search by year\n6 To Return to The Kojack Menu " << endl;
+	cout << flush << "Press \n1 To Search by name\n2 To Search by by Album\n3 To search by artist name\n4 To Search by year\n5 To Return to The Kojack Menu " << endl;
 	int n; cin >> n;
 	switch (n)
 	{
@@ -458,10 +462,10 @@ void search()
 	case 3:
 		find(n);
 		break;
-	case 5:
+	case 4:
 		find(n);
 		break;
-	case 6:
+	case 5:
 		return;
 	default:
 		cout << "not valid input" << endl;
@@ -479,49 +483,31 @@ void find(int choice)
 	switch (choice) {
 	case 1:
 		cout << "Enter Song Name : ";
-		cin.ignore();
-		getline(cin, s);
-		if (s[0] >= 97 && s[0] <= 122)
-			s[0] -= 32;
-		search_display(s, choice);
 		break;
 	case 2:
 		cout << "Enter Album : ";
-		cin.ignore();
-		getline(cin, s);
-
-		if (s[0] >= 97 && s[0] <= 122)
-			s[0] -= 32;
-		search_display(s, choice);
 		break;
 	case 3:
 		cout << "Enter Artist : ";
+		break;
+	case 4:
+		cout << "Enter Release Year : ";
+		break;
+	}
+	if (choice != 4)
+	{
 		cin.ignore();
 		getline(cin, s);
 		if (s[0] >= 97 && s[0] <= 122)
 			s[0] -= 32;
 		search_display(s, choice);
-		break;
-	case 4:
-		int year; cin >> year;
-		cout << "Enter Release Year : ";
-		search_display(s, choice, year);
-		break;
-	}
-	if (found == true)
-	{
-
-		cout << "Do You Wish To Play A Song? press '1' if ok else press 2 :";
-		char command; cin >> command;
-		if (command == '1')
-		{
-			cout << "Enter Song Number : ";
-			int sN; cin >> sN;
-			playMusic(song_data[sN].name, sN);
-		}
 	}
 	else
-		cout << "Not Found!";
+	{
+		int year; cin >> year;
+		search_display(s, choice, year);
+	}
+	
 }
 
 // Viewing functions *****************************************************************************************************************************************
@@ -535,7 +521,7 @@ void sorting()
 	system("cls");
 	if (x == 1)
 	{
-		for (int i = 10; i >= 0; i--) {
+		for (int i = Highest_rating ; i >= 0; i--) {
 			for (int j = 0; j < songs.size(); j++) {
 				if (song_data[j].rating == i) {
 					cout << counter + 1 << " ) " << song_data[j].name << endl;
@@ -547,7 +533,7 @@ void sorting()
 	}
 	else if (x == 2)
 	{
-		for (int i = 0; i <= 10; i++) {
+		for (int i = 0; i <= Highest_rating; i++) {
 			for (int j = 0; j < songs.size(); j++) {
 				if (song_data[j].rating == i) {
 					cout << counter + 1 << " ) " << song_data[j].name << endl;
@@ -674,8 +660,6 @@ void View_all(int choice)
 
 void shuffle(vector<string>ToShuffle)
 {
-	/* this function shuffles the indecies and put them in array named shuffled
-		then uses the array shuffled as an index to play music from the vector songs */
 	array <int, max_numsongs> shuffled_order = {};
 
 
