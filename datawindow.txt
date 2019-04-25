@@ -1,0 +1,204 @@
+sf::Vector2f mouse_position;
+sf::RectangleShape back_pic;
+sf::Texture background_texture;
+sf::RectangleShape done_button;
+sf::Texture done_texture;
+sf::Sprite donesprite;
+std::string userinput;
+sf::Text username;
+sf::RectangleShape usertextbox;
+sf::RectangleShape pwtextbox;
+sf::Text password;
+std::string pwinput;
+
+int main() {
+
+	string mod = "welcome";
+	
+	sf::RenderWindow starting_window(sf::VideoMode(600, 300), "Kojack Player", sf::Style::Default);
+	
+	usertextbox.setSize(sf::Vector2f(175, 21));
+	usertextbox.setOrigin(85, 143);
+	usertextbox.setPosition(265, 242);
+
+
+	pwtextbox.setSize(sf::Vector2f(175, 21));
+	pwtextbox.setOrigin(85, 143);
+	pwtextbox.setPosition(265, 319);
+
+
+	done_button.setSize(sf::Vector2f(165, 96));
+	done_button.setOrigin(85, 143);
+	done_button.setPosition(300, 375);
+	done_texture.loadFromFile("done button.png");
+	done_button.setTexture(&done_texture);
+	donesprite.setTexture(done_texture);
+	donesprite.setOrigin(85, 143);
+	donesprite.setPosition(300, 375);
+
+
+	sf::Font myfont;
+	myfont.loadFromFile("parkway lush.ttf");
+	username.setFont(myfont);
+	username.setFillColor(sf::Color::Blue);
+	username.setPosition(265, 235);
+	username.setOrigin(85, 143);
+
+
+	password.setFont(myfont);
+	password.setFillColor(sf::Color::Blue);
+	password.setPosition(265, 311);
+	password.setOrigin(85, 143);
+
+	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
+	background_texture.loadFromFile("datawindow.png");
+	if (!background_texture.loadFromFile("datawindow.png")) {
+		cout << "error while loading the background";
+	}
+	back_pic.setTexture(&background_texture);
+	int windicator = 0;
+	while (starting_window.isOpen())
+	{
+		sf::Event starting;
+		while (starting_window.pollEvent(starting))
+		{
+
+			if (starting.type == sf::Event::Closed) {
+				starting_window.close();
+			}
+			mouse_position.x = sf::Mouse::getPosition(starting_window).x;
+			mouse_position.y = sf::Mouse::getPosition(starting_window).y;
+
+			if (mod == "welcome")
+			{
+				starting_window.clear();
+				wpage(starting_window,starting,mod,mouse_position);
+								
+			}
+			if (mod == "login")
+			{
+				starting_window.clear();
+				starting_window.draw(back_pic);
+				starting_window.draw(done_button);
+				starting_window.draw(usertextbox);
+				starting_window.draw(pwtextbox);
+				if (focus(usertextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 1;
+					}
+				}
+				if (focus(pwtextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 2;
+					}
+				}
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8&&windicator==1)
+					{
+						userinput += starting.text.unicode;
+						username.setString(userinput);
+					}
+					if (starting.text.unicode == 8 && userinput.size() > 0&&windicator==1)
+					{
+						userinput.erase(userinput.size() - 1);
+						username.setString(userinput);
+					}
+				
+				}
+				starting_window.draw(username);
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8&&windicator==2)
+					{
+						pwinput += starting.text.unicode;
+						password.setString(pwinput);
+					}
+					if (starting.text.unicode == 8 && pwinput.size() > 0&&windicator==2)
+					{
+						pwinput.erase(userinput.size() - 1);
+						password.setString(pwinput);
+					}
+					
+
+				}
+				starting_window.draw(password);
+				if (focus(done_button.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						starting_window.close();
+					}
+				}
+			}
+			if (mod == "sign up")
+			{
+
+				starting_window.clear();
+				starting_window.draw(back_pic);
+				starting_window.draw(done_button);
+				starting_window.draw(usertextbox);
+				starting_window.draw(pwtextbox);
+				if (focus(usertextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 1;
+					}
+				}
+				if (focus(pwtextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 2;
+					}
+				}
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 1)
+					{
+						userinput += starting.text.unicode;
+						username.setString(userinput);
+					}
+					if (starting.text.unicode == 8 && userinput.size() > 0 && windicator == 1)
+					{
+						userinput.erase(userinput.size() - 1);
+						username.setString(userinput);
+					}
+					
+
+				}
+				starting_window.draw(username);
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 2)
+					{
+						pwinput += starting.text.unicode;
+						password.setString(pwinput);
+					}
+					if (starting.text.unicode == 8 && pwinput.size() > 0 && windicator == 2)
+					{
+						pwinput.erase(userinput.size() - 1);
+						password.setString(pwinput);
+					}
+
+				}
+				starting_window.draw(password);
+				if (focus(done_button.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						starting_window.close();
+					}
+				}
+			}
+		starting_window.display();
+		starting_window.clear();
+
+		}
+
+	}
