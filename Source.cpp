@@ -15,8 +15,8 @@
 #include <random>       
 #include <chrono> 
 #include <conio.h>
-#define directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\resources/"
-#define users_directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\Data/" 
+#define directory "D:\\projects\\Kojack-Player-GUI\\Kojack player\\Kojack player\\resources/"
+#define users_directory "C:\\Users\\MhmdAdnan\\source\\repos\\FINALONE\\FINALONE\\data/" 
 #define max_numsongs 10000
 #define Low_rating_activator 2
 
@@ -83,25 +83,25 @@ struct user
 void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position);
 void datapage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position);
 bool focus(sf::FloatRect sprite, sf::Vector2f mouse_position);
-void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing );
-void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing);
-void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing);
-void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing);
+void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing);
+void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing);
+void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing);
+void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing);
 
 ////// LOGICAL FUCNTIONS /////***
 void get_all_files_names_within_folder(string folder);
-void playMusic(const std::string& filename, int &play_num , bool& playing ,  sf::Music& music);
-vector<string> View_song(int choice, string name); 
+void playMusic(const std::string& filename, int &play_num, bool& playing, sf::Music& music);
+vector<string> View_song(int choice, string name);
 void read_users();
 void signup();
 void login();
 void READ_RATING();
 void Read_MetaData();
-vector<string> View_all(int choice); 
-void playback(vector<string>names, int play_num); 
+vector<string> View_all(int choice);
+void playback(vector<string>names, int play_num);
 void shuffle(vector<string>ToShuffle);
-void check_order(int& index_of_playing_song); 
-	
+void check_order(int& index_of_playing_song);
+
 
 
 
@@ -112,11 +112,13 @@ bool menu = false;
 bool found;
 int shuffled[max_numsongs], counter = 0;
 bool shufflle = false;
-string current_user; 
+string current_user;
 vector<string> songs;
 bool playing = false;
-
-int showanythingiwant; 
+vector <string> album_song;
+vector<string> artist_song;
+vector<string> genre_song;
+int showanythingiwant;
 sf::Music music;
 
 int main() {
@@ -153,9 +155,9 @@ int main() {
 		{
 			if (starting.type == sf::Event::Closed) {
 				starting_window.close();
-				return 0; 
+				return 0;
 			}
-			
+
 
 		}
 
@@ -166,7 +168,7 @@ int main() {
 
 
 
-	
+
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Kojack Player", sf::Style::Default);
 	mod = "song";
 	Read_MetaData();
@@ -179,32 +181,32 @@ int main() {
 			if (event.type == sf::Event::Closed) {
 				window.close();
 			}
-			
+
 			mouse_position.x = sf::Mouse::getPosition(window).x;
 			mouse_position.y = sf::Mouse::getPosition(window).y;
 			//cout << mouse_position.x << "\t" << mouse_position.y << endl;
 		}
 		if (mod == "song") {
 			window.clear();
-			song_tab(window, mouse_position, event, mod , music , playing );
+			song_tab(window, mouse_position, event, mod, music, playing);
 		}
 		if (mod == "album") {
 			window.clear();
-			album_tab(window, mouse_position, event, mod , music , playing);
+			album_tab(window, mouse_position, event, mod, music, playing);
 		}
 		if (mod == "artist") {
 			window.clear();
-			artist_tab(window, mouse_position, event, mod , music , playing);
+			artist_tab(window, mouse_position, event, mod, music, playing);
 
 		}
 		if (mod == "genre") {
 			window.clear();
-			genre_tab(window, mouse_position, event, mod , music , playing);
+			genre_tab(window, mouse_position, event, mod, music, playing);
 		}
 		window.display();
 		window.clear();
 
-		
+
 	}
 
 
@@ -403,10 +405,10 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 		}
 	}
-	
 
-	
-	shuffle(songs); 
+
+
+	shuffle(songs);
 
 
 	////////play button pressing
@@ -432,7 +434,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 				shufflle = false;
 			}
 			else {
-				shufflle = true; 
+				shufflle = true;
 			}
 
 		}
@@ -440,34 +442,34 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	
+
 
 	cout << shufflle << endl;
 	for (int i = 0; i < songs.size(); i++) {
-		
-			if (focus(while_playing.music_box[i].getGlobalBounds(), mouse_position))
+
+		if (focus(while_playing.music_box[i].getGlobalBounds(), mouse_position))
+		{
+			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left)
 			{
-				if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left)
-				{
-					if (shufflle== false ) {
+				if (shufflle == false) {
 
 					index_of_playing_song = i;
 					playMusic(songs[index_of_playing_song], index_of_playing_song, playing, music);
-					}
-					else {
+				}
+				else {
 					index_of_playing_song = shuffled[index_of_playing_song];
 					playMusic(songs[shuffled[index_of_playing_song]], index_of_playing_song, playing, music);
-					}
 				}
 			}
-			
+		}
+
 
 	}
 	if (focus(while_playing.backward_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-			index_of_playing_song --;
-			if ( shufflle == false){
-				check_order(index_of_playing_song); 
+			index_of_playing_song--;
+			if (shufflle == false) {
+				check_order(index_of_playing_song);
 				playMusic(songs[index_of_playing_song], index_of_playing_song, playing, music);
 			}
 			else {
@@ -480,8 +482,8 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 	if (focus(while_playing.forward_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-	
-			index_of_playing_song ++; 
+
+			index_of_playing_song++;
 			if (shufflle == false) {
 
 				check_order(index_of_playing_song);
@@ -510,11 +512,11 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-void playMusic(const std::string& filename, int &play_num, bool& playing , sf::Music& music)
+void playMusic(const std::string& filename, int &play_num, bool& playing, sf::Music& music)
 {
 	// Load an ogg music file
-	
-	if (!music.openFromFile(directory + filename + ".wav" ))
+
+	if (!music.openFromFile(directory + filename + ".wav"))
 		return;
 
 	// Display music informations
@@ -525,11 +527,11 @@ void playMusic(const std::string& filename, int &play_num, bool& playing , sf::M
 
 	// Play it
 
-	
+
 	music.openFromFile(directory + filename + ".wav");
 	music.play();
-	playing = true; 
-	
+	playing = true;
+
 
 }
 
@@ -601,7 +603,6 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	use_font.loadFromFile("Roboto-ThinItalic.ttf");
 
 	vector<string> to_be_shown = View_all(3);
-	vector<string>to_beshown = View_song(1, song_data->album);
 
 	float y = 55;
 	for (int i = 0; i < to_be_shown.size(); ++i) {
@@ -614,15 +615,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 		name_album[i].setColor(Color::Blue);
 		name_album[i].setPosition(0, y);
 		name_album[i].setCharacterSize(24);
-		album_result[i].setSize(Vector2f(200, 30));
-		album_result[i].setPosition(300, y);
-		album_result[i].setFillColor(Color::Transparent);
-		album_result_text[i].setFont(use_font);
-		album_result_text[i].setStyle(Text::Bold);
-		album_result_text[i].setString(to_beshown[i]);
-		album_result_text[i].setColor(Color::Magenta);
-		album_result_text[i].setPosition(300, y);
-		album_result_text[i].setCharacterSize(24);
+
 
 
 
@@ -642,7 +635,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 
 
-	
+
 
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
@@ -755,17 +748,38 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 		window.draw(album[i]);
 		window.draw(name_album[i]);
 	}
-	
-	for (int i = 0; i < to_beshown.size(); ++i) {
+
+	for (int i = 0; i < to_be_shown.size(); ++i) {
 		if (focus(album[i].getGlobalBounds(), mouse_position)) {
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-				showanythingiwant = i; 
+				album_song = View_song(1, to_be_shown[i]);
 			}
 		}
-		window.draw(album_result_text[showanythingiwant]); 
+
 	}
-
-
+	
+	y = 55;
+	for (int i = 0; i < album_song.size(); i++) {
+		album_result[i].setSize(Vector2f(200, 30));
+		album_result[i].setPosition(300, y);
+		album_result[i].setFillColor(Color::Transparent);
+		album_result_text[i].setFont(use_font);
+		album_result_text[i].setStyle(Text::Bold);
+		album_result_text[i].setColor(Color::Magenta);
+		album_result_text[i].setPosition(300, y);
+		album_result_text[i].setString(album_song[i]);
+		album_result_text[i].setCharacterSize(24);
+		y += 33;
+		window.draw(album_result[i]);
+		window.draw(album_result_text[i]);
+	}
+	for (int i = 0; i < album_song.size(); ++i) {
+		if (focus(album_result[i].getGlobalBounds(), mouse_position)) {
+			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+				playMusic(album_song[i], i, playing, music);
+			}
+		}
+	}
 
 
 
@@ -792,10 +806,10 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 		}
 	}
 
-	
 
 
-	
+
+
 
 	////////play button pressing
 	if (focus(play_sprite.getGlobalBounds(), mouse_position)) {
@@ -840,7 +854,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 }
 
 
-void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod , sf::Music& music , bool& playing) {
+void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing) {
 	window.clear();
 
 	sf::RectangleShape back_pic;
@@ -876,12 +890,14 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	RectangleShape artist[20];
 	Text name_artist[20];
 	Font use_font;
+	RectangleShape artist_result[20];
+	Text artist_result_text[20];
 	use_font.loadFromFile("Roboto-ThinItalic.ttf");
-	
 
-	vector<string> to_be_shown =  View_all(1); 
 
-	
+	vector<string> to_be_shown = View_all(1);
+
+
 	float x = 55;
 	for (int i = 0; i < to_be_shown.size(); ++i) {
 		artist[i].setSize(Vector2f(200, 30));
@@ -897,16 +913,11 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 
 	}
 
-	
-	
 
 
-	search_box.setSize(sf::Vector2f(200, 40));
-	search_box.setPosition(520, 75);
-	search_pic.loadFromFile("search bar.png");
-	search_box.setTexture(&search_pic);
-	search_sprite.setTexture(search_pic);
-	search_sprite.setPosition(520, 75);
+
+
+	
 
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
@@ -1010,17 +1021,48 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	window.draw(shuffle_button);
 	window.draw(genre_list);
 	window.draw(album_list);
-	window.draw(search_box);
+
 	window.draw(songs_list);
 	window.draw(artist_list);
 	window.draw(backward_button);
 	window.draw(forward_button);
 	window.draw(play_button);
-	for (int i = 0; i < to_be_shown.size() ; i++) {
+	for (int i = 0; i < to_be_shown.size(); i++) {
 		window.draw(artist[i]);
 		window.draw(name_artist[i]);
 	}
+	for (int i = 0; i < to_be_shown.size(); ++i) {
+		if (focus(artist[i].getGlobalBounds(), mouse_position)) {
+			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+				artist_song = View_song(2, to_be_shown[i]);
+			}
+		}
 
+	}
+
+	int y = 55;
+	for (int i = 0; i < artist_song.size(); i++) {
+		artist_result[i].setSize(Vector2f(200, 30));
+		artist_result[i].setPosition(200, y);
+		artist_result[i].setFillColor(Color::Transparent);
+		artist_result_text[i].setFont(use_font);
+		artist_result_text[i].setStyle(Text::Bold);
+		artist_result_text[i].setColor(Color::Magenta);
+		artist_result_text[i].setPosition(200, y);
+		artist_result_text[i].setString(artist_song[i]);
+		artist_result_text[i].setCharacterSize(24);
+		y += 33;
+		window.draw(artist_result[i]);
+		window.draw(artist_result_text[i]);
+	}
+	for (int i = 0; i < artist_song.size(); ++i) {
+		if (focus(artist_result[i].getGlobalBounds(), mouse_position)) {
+			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+				playMusic(artist_song[i], i, playing, music);
+			}
+		}
+	}
+	
 
 
 
@@ -1046,22 +1088,9 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 
 
 
-	/////// search button pressing
-	if (focus(search_sprite.getGlobalBounds(), mouse_position) && mouse_position.x < 560) {
-		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+	
 
 
-		}
-	}
-
-
-	//////////////string to search for 
-	if (focus(search_sprite.getGlobalBounds(), mouse_position) && mouse_position.x < 560) {
-		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-
-
-		}
-	}
 
 
 
@@ -1144,6 +1173,8 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	RectangleShape genre[20];
 	Text name_genre[20];
 	Font use_font;
+	RectangleShape genre_result[20];
+	Text genre_result_text[20];
 	use_font.loadFromFile("Roboto-ThinItalic.ttf");
 
 	vector<string> to_be_shown = View_all(2);
@@ -1165,12 +1196,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	}
 
 
-	search_box.setSize(sf::Vector2f(200, 40));
-	search_box.setPosition(520, 75);
-	search_pic.loadFromFile("search bar.png");
-	search_box.setTexture(&search_pic);
-	search_sprite.setTexture(search_pic);
-	search_sprite.setPosition(520, 75);
+
 
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
@@ -1273,8 +1299,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	window.draw(back_pic);
 	window.draw(shuffle_button);
 	window.draw(genre_list);
-	window.draw(search_box);
-	window.draw(album_list);
+    window.draw(album_list);
 	window.draw(songs_list);
 	window.draw(artist_list);
 	window.draw(backward_button);
@@ -1283,6 +1308,37 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	for (int i = 0; i < to_be_shown.size(); i++) {
 		window.draw(genre[i]);
 		window.draw(name_genre[i]);
+	}
+	for (int i = 0; i < to_be_shown.size(); ++i) {
+		if (focus(genre[i].getGlobalBounds(), mouse_position)) {
+			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+				genre_song = View_song(3, to_be_shown[i]);
+			}
+		}
+
+	}
+
+	int y = 55;
+	for (int i = 0; i < genre_song.size(); i++) {
+		genre_result[i].setSize(Vector2f(200, 30));
+		genre_result[i].setPosition(300, y);
+		genre_result[i].setFillColor(Color::Transparent);
+		genre_result_text[i].setFont(use_font);
+		genre_result_text[i].setStyle(Text::Bold);
+		genre_result_text[i].setColor(Color::Magenta);
+		genre_result_text[i].setPosition(300, y);
+		genre_result_text[i].setString(genre_song[i]);
+		genre_result_text[i].setCharacterSize(24);
+		y += 33;
+		window.draw(genre_result[i]);
+		window.draw(genre_result_text[i]);
+	}
+	for (int i = 0; i < genre_song.size(); ++i) {
+		if (focus(genre_result[i].getGlobalBounds(), mouse_position)) {
+			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+				playMusic(genre_song[i], i, playing, music);
+			}
+		}
 	}
 
 
@@ -1308,31 +1364,13 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 
 
-	/////// search button pressing
-	if (focus(search_sprite.getGlobalBounds(), mouse_position) && mouse_position.x < 560) {
-		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+	
 
 
-		}
-	}
+	
 
 
-	/////// search button pressing
-	if (focus(search_sprite.getGlobalBounds(), mouse_position) && mouse_position.x < 560) {
-		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-
-
-		}
-	}
-
-
-	//////////////string to search for 
-	if (focus(search_sprite.getGlobalBounds(), mouse_position) && mouse_position.x < 560) {
-		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-
-
-		}
-	}
+	
 
 
 
@@ -1375,7 +1413,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 		}
 	}
-	
+
 
 }
 
@@ -1421,7 +1459,7 @@ void datapage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vecto
 
 
 }
-	
+
 
 
 void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position)
@@ -1488,8 +1526,8 @@ void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f
 
 
 
-	
-	
+
+
 
 }
 
@@ -1572,7 +1610,7 @@ void login()
 	{
 		cout << "Username : ";
 		cin >> current_user;
-		for (int i = 0 ; i < NumUsers ; i++)
+		for (int i = 0; i < NumUsers; i++)
 		{
 			if (current_user == users_data[i].name)
 			{
@@ -1589,7 +1627,7 @@ void login()
 			break;
 		else
 			cout << "invalid username or password" << endl;
-		
+
 	}
 
 	system("cls");
@@ -1635,7 +1673,7 @@ void Read_MetaData()
 		getline(fs, song_data[i].genre);
 		getline(fs, song_data[i].album);
 		fs >> song_data[i].year;
-		
+
 	}
 }
 
@@ -1662,8 +1700,8 @@ vector<string> View_all(int choice)
 	}
 	//cout << ones.size() << endl << to_be_shown.size() << endl;
 	//system("pause");
-	
-	return to_be_shown; 
+
+	return to_be_shown;
 }
 
 
@@ -1671,16 +1709,15 @@ vector<string> View_song(int choice, string name)
 {
 	set<string> ones;
 	vector<string>to_beshown;
-	int counter = 0;
 	to_beshown.clear();
 	ones.clear();
 	for (int i = 0; i < songs.size(); i++) {
-		if (choice == 1 && name == song_data->album) {
+		if (choice == 1 && name == song_data[i].album) {
 			ones.insert(song_data[i].name);
 		}
-		else if (choice == 2 && name == song_data->artist)
+		else if (choice == 2 && name == song_data[i].artist)
 			ones.insert(song_data[i].name);
-		else if (choice == 3 && name == song_data->genre)
+		else if (choice == 3 && name == song_data[i].genre)
 			ones.insert(song_data[i].name);
 	}
 	for (auto i : ones) {
