@@ -263,12 +263,12 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	while_playing.search_box.setSize(sf::Vector2f(200, 40));
-	while_playing.search_box.setPosition(520, 75);
-	while_playing.search_pic.loadFromFile("search bar.png");
-	while_playing.search_box.setTexture(&while_playing.search_pic);
-	while_playing.search_sprite.setTexture(while_playing.search_pic);
-	while_playing.search_sprite.setPosition(520, 75);
+	//while_playing.search_box.setSize(sf::Vector2f(200, 40));
+	//while_playing.search_box.setPosition(520, 75);
+	//while_playing.search_pic.loadFromFile("search bar.png");
+	//while_playing.search_box.setTexture(&while_playing.search_pic);
+	//while_playing.search_sprite.setTexture(while_playing.search_pic);
+	//while_playing.search_sprite.setPosition(520, 75);
 
 
 
@@ -377,7 +377,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	window.draw(while_playing.backward_button);
 	window.draw(while_playing.forward_button);
 	window.draw(while_playing.play_button);
-	window.draw(while_playing.search_box);
+	//window.draw(while_playing.search_box);
 	for (int i = 0; i < songs.size(); i++) {
 		window.draw(while_playing.music_box[i]);
 		window.draw(while_playing.name_music[i]);
