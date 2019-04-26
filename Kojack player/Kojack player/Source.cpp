@@ -15,8 +15,8 @@
 #include <random>       
 #include <chrono> 
 #include <conio.h>
-#define directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\resources/"
-#define users_directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\Data/"
+#define directory "D:\\projects\\Kojack-Player-GUI\\Kojack player\\Kojack player\\resources/"
+#define users_directory "C:\\Users\\MhmdAdnan\\source\\repos\\FINALONE\\FINALONE\\data/" 
 #define max_numsongs 10000
 #define Low_rating_activator 2
 
@@ -61,9 +61,7 @@ struct second_window {
 	sf::Sprite song_sprite;
 	sf::Texture artist_pic;
 	sf::Sprite artist_sprite;
-	sf::RectangleShape search_box;
-	sf::Texture search_pic;
-	sf::Sprite search_sprite;
+	sf::CircleShape search_box;
 	sf::Text seacr_text;
 	sf::RectangleShape rating_bar;
 	RectangleShape music_box[20];
@@ -229,8 +227,9 @@ bool focus(sf::FloatRect sprite, sf::Vector2f mouse_position) {
 void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing) {
 	window.clear();
 
-
+	
 	while_playing.use_font.loadFromFile("Roboto-ThinItalic.ttf");
+	
 
 	float x = 55;
 	for (int i = 0; i < songs.size(); ++i) {
@@ -248,9 +247,16 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	}
+	
+	while_playing.search_box.setRadius(30);
+	while_playing.search_box.setPosition(10, 530);
+	while_playing.search_box.setFillColor(sf::Color::Green);
+	if (focus(while_playing.search_box.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			cout << "woek";
 
-
-
+		}
+	}
 
 
 
@@ -259,11 +265,11 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.rating_bar.setPosition(580, 535);
 	while_playing.rating_bar.setFillColor(sf::Color::Green);
 
-
-
 	
 
-	
+
+
+
 
 
 	while_playing.play_button.setSize(sf::Vector2f(75, 75));
@@ -370,7 +376,8 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	window.draw(while_playing.backward_button);
 	window.draw(while_playing.forward_button);
 	window.draw(while_playing.play_button);
-	
+	window.draw(while_playing.search_box);
+
 	for (int i = 0; i < songs.size(); i++) {
 		window.draw(while_playing.music_box[i]);
 		window.draw(while_playing.name_music[i]);
@@ -616,7 +623,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 	}
 
-
+	
 
 
 
@@ -746,6 +753,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 		if (focus(album[i].getGlobalBounds(), mouse_position)) {
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 				songs_by_a_default_thing = View_song(1, to_be_shown[i]);
+
 			}
 		}
 
@@ -1060,7 +1068,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 
 	if (focus(album_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-			mod = "album"; 
+			mod = "album";
 			songs_by_a_default_thing.clear();
 		}
 	}
@@ -1306,7 +1314,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 	}
 
-	y = 55; 
+	y = 55;
 	for (int i = 0; i < songs_by_a_default_thing.size(); i++) {
 		genre_result[i].setSize(Vector2f(200, 30));
 		genre_result[i].setPosition(300, y);
