@@ -505,13 +505,18 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	while_playing.shuffle_button.setSize(sf::Vector2f(75, 75));
+	while_playing.shuffle_button.setSize(sf::Vector2f(60, 60));
 	while_playing.shuffle_button.setOrigin(37.5, 37.5);
-	while_playing.shuffle_button.setPosition(150, 550);
-	while_playing.shuffle_pic.loadFromFile("shuffle.png");
+	while_playing.shuffle_button.setPosition(145, 565);
+	if (!shufflle) {
+	while_playing.shuffle_pic.loadFromFile("not shuffled.png");
+	}
+	else {
+		while_playing.shuffle_pic.loadFromFile("shuffled.png");
+	}
 	while_playing.shuffle_button.setTexture(&while_playing.shuffle_pic);
 	while_playing.shuffle_sprite.setTexture(while_playing.shuffle_pic);
-	while_playing.shuffle_sprite.setPosition(150, 550);
+	while_playing.shuffle_sprite.setPosition(145, 570);
 	while_playing.shuffle_sprite.setOrigin(12.5, 12.5);
 
 
@@ -628,7 +633,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	/////// enabling shuffle 
-	if (focus(while_playing.shuffle_sprite.getGlobalBounds(), mouse_position)) {
+	if (focus(while_playing.shuffle_button.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			if (shufflle) {
 				shufflle = false;
