@@ -105,22 +105,22 @@ int main() {
 					}
 					if (starting.text.unicode == 8 && userinput.size() > 0&&windicator==1)
 					{
-						userinput.erase(userinput.size() - 1);
+						userinput.erase(userinput.begin() + userinput.size() - 1);
 						username.setString(userinput);
 					}
-				
+					
 				}
 				starting_window.draw(username);
-				if (starting.type == sf::Event::TextEntered)
+				if (s tarting.type == sf::Event::TextEntered)
 				{
 					if (starting.text.unicode < 128 && starting.text.unicode != 8&&windicator==2)
 					{
 						pwinput += starting.text.unicode;
 						password.setString(pwinput);
 					}
-					if (starting.text.unicode == 8 && pwinput.size() > 0&&windicator==2)
+					else if (starting.text.unicode == 8 && pwinput.size() > 0&&windicator==2)
 					{
-						pwinput.erase(userinput.size() - 1);
+						pwinput.erase(pwinput.begin()+pwinput.size()-1);
 						password.setString(pwinput);
 					}
 					
@@ -166,10 +166,9 @@ int main() {
 					}
 					if (starting.text.unicode == 8 && userinput.size() > 0 && windicator == 1)
 					{
-						userinput.erase(userinput.size() - 1);
+						userinput.erase(userinput.begin() + userinput.size() - 1);
 						username.setString(userinput);
 					}
-					
 
 				}
 				starting_window.draw(username);
@@ -180,11 +179,12 @@ int main() {
 						pwinput += starting.text.unicode;
 						password.setString(pwinput);
 					}
-					if (starting.text.unicode == 8 && pwinput.size() > 0 && windicator == 2)
+					else if (starting.text.unicode == 8 && pwinput.size() > 0 && windicator == 2)
 					{
-						pwinput.erase(userinput.size() - 1);
+						pwinput.erase(pwinput.begin() + pwinput.size() - 1);
 						password.setString(pwinput);
 					}
+
 
 				}
 				starting_window.draw(password);
