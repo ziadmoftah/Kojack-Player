@@ -17,8 +17,10 @@
 #include <conio.h>
 #define directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\resources/"
 #define users_directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\Data/" 
+#define Imgs_directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\Imgs/"
 #define max_numsongs 10000
 #define Low_rating_activator 2
+#define Highest_rating 5
 
 
 using namespace std;
@@ -67,6 +69,8 @@ struct second_window {
 	RectangleShape music_box[20];
 	Text name_music[20];
 	Font use_font;
+	sf::RectangleShape sorting_button[2]; 
+	sf::Texture sorting_pic[2]; 
 }while_playing;
 struct user
 {
@@ -79,7 +83,6 @@ struct user
 //////// FUCTIONS RELATED TO GUI ///*****
 
 void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position);
-void datapage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position);
 bool focus(sf::FloatRect sprite, sf::Vector2f mouse_position);
 void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing);
 void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing);
@@ -99,6 +102,7 @@ vector<string> View_all(int choice);
 void playback(vector<string>names, int play_num);
 void shuffle(vector<string>ToShuffle);
 void check_order(int& index_of_playing_song);
+vector<string> sorting(int x); 
 
 
 
@@ -112,10 +116,13 @@ int shuffled[max_numsongs], counter = 0;
 bool shufflle = false;
 string current_user;
 vector<string> songs;
+vector<string> sorted_songs; 
+bool is_songs_sorted = false;
 bool playing = false;
 vector <string> songs_by_a_default_thing;
 int showanythingiwant;
 sf::Music music;
+
 
 
 ///// welcome window 
@@ -139,11 +146,12 @@ sf::Font error_message_font;
 int main() {
 	get_all_files_names_within_folder(directory);
 	read_users();
+	
 	string mod = "welcome";
 
 	sf::RenderWindow starting_window(sf::VideoMode(600, 300), "Kojack Player", sf::Style::Default);
 
-	error_message_font.loadFromFile("Roboto-ThinItalic.ttf");
+	error_message_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
 	error_message[0].setFont(error_message_font); 
 	error_message[0].setCharacterSize(25);
 	error_message[0].setFillColor(sf::Color::Red); 
@@ -174,7 +182,7 @@ int main() {
 	done_button.setSize(sf::Vector2f(165, 96));
 	done_button.setOrigin(85, 143);
 	done_button.setPosition(300, 375);
-	done_texture.loadFromFile("done button.png");
+	done_texture.loadFromFile( Imgs_directory"done button.png" );
 	done_button.setTexture(&done_texture);
 	donesprite.setTexture(done_texture);
 	donesprite.setOrigin(85, 143);
@@ -182,7 +190,7 @@ int main() {
 
 
 	sf::Font myfont;
-	myfont.loadFromFile("parkway lush.ttf");
+	myfont.loadFromFile(Imgs_directory"parkway lush.ttf");
 	username.setFont(myfont);
 	username.setFillColor(sf::Color::Blue);
 	username.setPosition(265, 235);
@@ -194,9 +202,11 @@ int main() {
 	password.setPosition(265, 311);
 	password.setOrigin(85, 143);
 
+
+
 	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
-	background_texture.loadFromFile("datawindow.png");
-	if (!background_texture.loadFromFile("datawindow.png")) {
+	background_texture.loadFromFile(Imgs_directory"datawindow.png");
+	if (!background_texture.loadFromFile(Imgs_directory"datawindow.png")) {
 		cout << "error while loading the background";
 	}
 	back_pic.setTexture(&background_texture);
@@ -368,6 +378,7 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Kojack Player", sf::Style::Default);
 	mod = "song";
 	Read_MetaData();
+	READ_RATING();
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -428,8 +439,20 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	window.clear();
 
 
-	while_playing.use_font.loadFromFile("Roboto-ThinItalic.ttf");
+	while_playing.use_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
 
+
+	while_playing.sorting_button[0].setSize(sf::Vector2f(50 , 75 )); 
+	while_playing.sorting_pic[0].loadFromFile(Imgs_directory"arrow dn.png");
+	while_playing.sorting_button[0].setPosition(550, 100);
+	while_playing.sorting_button[0].setTexture(&while_playing.sorting_pic[0]);
+	while_playing.sorting_button[0].setFillColor(sf::Color::Yellow);
+
+	while_playing.sorting_button[1].setSize(sf::Vector2f(50, 75));
+	while_playing.sorting_pic[1].loadFromFile(Imgs_directory"arrow up.png");
+	while_playing.sorting_button[1].setPosition(500, 100);
+	while_playing.sorting_button[1].setTexture(&while_playing.sorting_pic[1]);
+	while_playing.sorting_button[1].setFillColor(sf::Color::Magenta);
 
 	float x = 55;
 	for (int i = 0; i < songs.size(); ++i) {
@@ -439,7 +462,13 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 		while_playing.music_box[i].setFillColor(Color::Transparent);
 		while_playing.name_music[i].setFont(while_playing.use_font);
 		while_playing.name_music[i].setStyle(Text::Bold);
-		while_playing.name_music[i].setString(songs[i]);
+		if (is_songs_sorted) {
+			while_playing.name_music[i].setString(sorted_songs[i]);
+
+		}
+		else {
+			while_playing.name_music[i].setString(songs[i]);
+		}
 		while_playing.name_music[i].setColor(Color::Blue);
 		while_playing.name_music[i].setPosition(5, x);
 		while_playing.name_music[i].setCharacterSize(24);
@@ -475,7 +504,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.play_button.setSize(sf::Vector2f(75, 75));
 	while_playing.play_button.setOrigin(25, 25);
 	while_playing.play_button.setPosition(400, 540);
-	while_playing.play_pic.loadFromFile("pause-play.png");
+	while_playing.play_pic.loadFromFile(Imgs_directory"pause-play.png");
 	while_playing.play_button.setTexture(&while_playing.play_pic);
 	while_playing.play_sprite.setTexture(while_playing.play_pic);
 	while_playing.play_sprite.setOrigin(25, 25);
@@ -485,7 +514,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.backward_button.setSize(sf::Vector2f(75, 75));
 	while_playing.backward_button.setOrigin(25, 25);
 	while_playing.backward_button.setPosition(300, 540);
-	while_playing.backward_pic.loadFromFile("previous.png");
+	while_playing.backward_pic.loadFromFile(Imgs_directory"previous.png");
 	while_playing.backward_button.setTexture(&while_playing.backward_pic);
 	while_playing.backward_sprite.setTexture(while_playing.backward_pic);
 	while_playing.backward_sprite.setOrigin(25, 25);
@@ -497,7 +526,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.forward_button.setSize(sf::Vector2f(75, 75));
 	while_playing.forward_button.setOrigin(25, 25);
 	while_playing.forward_button.setPosition(500, 540);
-	while_playing.forward_pic.loadFromFile("next.png");
+	while_playing.forward_pic.loadFromFile(Imgs_directory"next.png");
 	while_playing.forward_button.setTexture(&while_playing.forward_pic);
 	while_playing.forward_sprite.setTexture(while_playing.forward_pic);
 	while_playing.forward_sprite.setOrigin(25, 25);
@@ -509,10 +538,10 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.shuffle_button.setOrigin(37.5, 37.5);
 	while_playing.shuffle_button.setPosition(145, 565);
 	if (!shufflle) {
-	while_playing.shuffle_pic.loadFromFile("not shuffled.png");
+	while_playing.shuffle_pic.loadFromFile(Imgs_directory"not shuffled.png");
 	}
 	else {
-		while_playing.shuffle_pic.loadFromFile("shuffled.png");
+		while_playing.shuffle_pic.loadFromFile(Imgs_directory"shuffled.png");
 	}
 	while_playing.shuffle_button.setTexture(&while_playing.shuffle_pic);
 	while_playing.shuffle_sprite.setTexture(while_playing.shuffle_pic);
@@ -526,7 +555,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 	while_playing.songs_list.setSize(sf::Vector2f(200, 50));
 	while_playing.songs_list.setPosition(0, 0);
-	while_playing.song_pic.loadFromFile("songs  pressed.png");
+	while_playing.song_pic.loadFromFile(Imgs_directory"songs  pressed.png");
 	while_playing.songs_list.setTexture(&while_playing.song_pic);
 	while_playing.song_sprite.setTexture(while_playing.song_pic);
 	while_playing.song_sprite.setPosition(0, 0);
@@ -535,7 +564,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 	while_playing.artist_list.setSize(sf::Vector2f(200, 50));
 	while_playing.artist_list.setPosition(200, 0);
-	while_playing.artist_pic.loadFromFile("artists unpressed.png");
+	while_playing.artist_pic.loadFromFile(Imgs_directory"artists unpressed.png");
 	while_playing.artist_list.setTexture(&while_playing.artist_pic);
 	while_playing.artist_sprite.setTexture(while_playing.artist_pic);
 	while_playing.artist_sprite.setPosition(200, 0);
@@ -546,7 +575,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 	while_playing.album_list.setSize(sf::Vector2f(200, 50));
 	while_playing.album_list.setPosition(400, 0);
-	while_playing.album_pic.loadFromFile("albums unpressed.png");
+	while_playing.album_pic.loadFromFile(Imgs_directory"albums unpressed.png");
 	while_playing.album_list.setTexture(&while_playing.album_pic);
 	while_playing.album_sprite.setTexture(while_playing.album_pic);
 	while_playing.album_sprite.setPosition(400, 0);
@@ -555,7 +584,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 	while_playing.genre_list.setSize(sf::Vector2f(200, 50));
 	while_playing.genre_list.setPosition(600, 0);
-	while_playing.genre_pic.loadFromFile("genres unpressed.png");
+	while_playing.genre_pic.loadFromFile(Imgs_directory"genres unpressed.png");
 	while_playing.genre_list.setTexture(&while_playing.genre_pic);
 	while_playing.genre_sprite.setTexture(while_playing.genre_pic);
 	while_playing.genre_sprite.setPosition(600, 0);
@@ -565,8 +594,8 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	while_playing.back_pic.setSize(sf::Vector2f(800.0f, 600.0f));
-	while_playing.background_texture.loadFromFile("wallpaper dark final final.png");
-	if (!while_playing.background_texture.loadFromFile("wallpaper dark final final.png")) {
+	while_playing.background_texture.loadFromFile(Imgs_directory"wallpaper dark final final.png");
+	if (!while_playing.background_texture.loadFromFile(Imgs_directory"wallpaper dark final final.png")) {
 		cout << "error while loading the background";
 	}
 	while_playing.back_pic.setTexture(&while_playing.background_texture);
@@ -576,6 +605,8 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	window.draw(while_playing.genre_list);
 	window.draw(while_playing.album_list);
 	window.draw(while_playing.songs_list);
+	window.draw(while_playing.sorting_button[0]);
+	window.draw(while_playing.sorting_button[1]);
 	window.draw(while_playing.artist_list);
 	window.draw(while_playing.rating_bar);
 	window.draw(while_playing.backward_button);
@@ -592,13 +623,13 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	if (focus(while_playing.album_sprite.getGlobalBounds(), mouse_position)) {
+	if (focus(while_playing.album_sprite.getGlobalBounds(), mouse_position )) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "album";
 			songs_by_a_default_thing.clear();
 		}
 	}
-	if (focus(while_playing.genre_sprite.getGlobalBounds(), mouse_position)) {
+	if (focus(while_playing.genre_sprite.getGlobalBounds(), mouse_position )) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "genre";
 			songs_by_a_default_thing.clear();
@@ -649,7 +680,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	cout << shufflle << endl;
+	
 	for (int i = 0; i < songs.size(); i++) {
 
 		if (focus(while_playing.music_box[i].getGlobalBounds(), mouse_position))
@@ -710,6 +741,32 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 		else {
 			check_order(index_of_playing_song);
 			playMusic(songs[shuffled[index_of_playing_song]], index_of_playing_song, playing, music);
+		}
+	}
+
+
+	//cout << is_songs_sorted << endl;
+	// from high to low 
+	if (focus(while_playing.sorting_button[0].getGlobalBounds(), mouse_position) ){
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			if (is_songs_sorted == false) {
+				is_songs_sorted = true;
+				sorted_songs = sorting(1) ;
+			}
+			else if (is_songs_sorted == true) {
+				is_songs_sorted = false ;
+			}
+		}
+	}
+	if (focus(while_playing.sorting_button[1].getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			if (is_songs_sorted == false) {
+				is_songs_sorted = true;
+				sorted_songs = sorting(2);
+			}
+			else if (is_songs_sorted == true) {
+				is_songs_sorted = false;
+			}
 		}
 	}
 }
@@ -805,7 +862,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	Text name_album[20];
 
 	Font use_font;
-	use_font.loadFromFile("Roboto-ThinItalic.ttf");
+	use_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
 
 	vector<string> to_be_shown = View_all(3);
 
@@ -845,7 +902,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
 	play_button.setPosition(400, 540);
-	play_pic.loadFromFile("pause-play.png");
+	play_pic.loadFromFile(Imgs_directory"pause-play.png");
 	play_button.setTexture(&play_pic);
 	play_sprite.setTexture(play_pic);
 	play_sprite.setOrigin(25, 25);
@@ -856,7 +913,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	backward_button.setSize(sf::Vector2f(75, 75));
 	backward_button.setOrigin(25, 25);
 	backward_button.setPosition(300, 540);
-	backward_pic.loadFromFile("previous.png");
+	backward_pic.loadFromFile(Imgs_directory"previous.png");
 	backward_button.setTexture(&backward_pic);
 	backward_sprite.setTexture(backward_pic);
 	backward_sprite.setOrigin(25, 25);
@@ -868,7 +925,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	forward_button.setSize(sf::Vector2f(75, 75));
 	forward_button.setOrigin(25, 25);
 	forward_button.setPosition(500, 540);
-	forward_pic.loadFromFile("next.png");
+	forward_pic.loadFromFile(Imgs_directory"next.png");
 	forward_button.setTexture(&forward_pic);
 	forward_sprite.setTexture(forward_pic);
 	forward_sprite.setOrigin(25, 25);
@@ -879,7 +936,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	shuffle_button.setSize(sf::Vector2f(75, 75));
 	shuffle_button.setOrigin(37.5, 37.5);
 	shuffle_button.setPosition(150, 550);
-	shuffle_pic.loadFromFile("shuffle.png");
+	shuffle_pic.loadFromFile(Imgs_directory"shuffle.png");
 	shuffle_button.setTexture(&shuffle_pic);
 	shuffle_sprite.setTexture(shuffle_pic);
 	shuffle_sprite.setPosition(150, 550);
@@ -893,7 +950,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	songs_list.setSize(sf::Vector2f(200, 50));
 
 	songs_list.setPosition(0, 0);
-	song_pic.loadFromFile("songs 200  unpressed.png");
+	song_pic.loadFromFile(Imgs_directory"songs 200  unpressed.png");
 	songs_list.setTexture(&song_pic);
 	song_sprite.setTexture(song_pic);
 	song_sprite.setPosition(0, 0);
@@ -903,7 +960,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	artist_list.setSize(sf::Vector2f(200, 50));
 
 	artist_list.setPosition(200, 0);
-	artist_pic.loadFromFile("artists unpressed.png");
+	artist_pic.loadFromFile(Imgs_directory"artists unpressed.png");
 	artist_list.setTexture(&artist_pic);
 	artist_sprite.setTexture(artist_pic);
 	artist_sprite.setPosition(200, 0);
@@ -914,7 +971,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 	album_list.setSize(sf::Vector2f(200, 50));
 	album_list.setPosition(400, 0);
-	album_pic.loadFromFile("albums pressed.png");
+	album_pic.loadFromFile(Imgs_directory"albums pressed.png");
 	album_list.setTexture(&album_pic);
 	album_sprite.setTexture(album_pic);
 	album_sprite.setPosition(400, 0);
@@ -924,7 +981,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	genre_list.setSize(sf::Vector2f(200, 50));
 
 	genre_list.setPosition(600, 0);
-	genre_pic.loadFromFile("genres unpressed.png");
+	genre_pic.loadFromFile(Imgs_directory"genres unpressed.png");
 	genre_list.setTexture(&genre_pic);
 	genre_sprite.setTexture(genre_pic);
 	genre_sprite.setPosition(600, 0);
@@ -934,8 +991,8 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 
 	back_pic.setSize(sf::Vector2f(800.0f, 600.0f));
-	background_texture.loadFromFile("wallpaper dark final final.png");
-	if (!background_texture.loadFromFile("wallpaper dark final final.png")) {
+	background_texture.loadFromFile(Imgs_directory"wallpaper dark final final.png");
+	if (!background_texture.loadFromFile(Imgs_directory"wallpaper dark final final.png")) {
 		cout << "error while loading the background";
 	}
 	back_pic.setTexture(&background_texture);
@@ -1095,7 +1152,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	Font use_font;
 	RectangleShape artist_result[20];
 	Text artist_result_text[20];
-	use_font.loadFromFile("Roboto-ThinItalic.ttf");
+	use_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
 
 
 	vector<string> to_be_shown = View_all(1);
@@ -1125,7 +1182,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
 	play_button.setPosition(400, 540);
-	play_pic.loadFromFile("pause-play.png");
+	play_pic.loadFromFile(Imgs_directory"pause-play.png");
 	play_button.setTexture(&play_pic);
 	play_sprite.setTexture(play_pic);
 	play_sprite.setOrigin(25, 25);
@@ -1136,7 +1193,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	backward_button.setSize(sf::Vector2f(75, 75));
 	backward_button.setOrigin(25, 25);
 	backward_button.setPosition(300, 540);
-	backward_pic.loadFromFile("previous.png");
+	backward_pic.loadFromFile(Imgs_directory"previous.png");
 	backward_button.setTexture(&backward_pic);
 	backward_sprite.setTexture(backward_pic);
 	backward_sprite.setOrigin(25, 25);
@@ -1148,7 +1205,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	forward_button.setSize(sf::Vector2f(75, 75));
 	forward_button.setOrigin(25, 25);
 	forward_button.setPosition(500, 540);
-	forward_pic.loadFromFile("next.png");
+	forward_pic.loadFromFile(Imgs_directory"next.png");
 	forward_button.setTexture(&forward_pic);
 	forward_sprite.setTexture(forward_pic);
 	forward_sprite.setOrigin(25, 25);
@@ -1159,7 +1216,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	shuffle_button.setSize(sf::Vector2f(75, 75));
 	shuffle_button.setOrigin(37.5, 37.5);
 	shuffle_button.setPosition(150, 550);
-	shuffle_pic.loadFromFile("shuffle.png");
+	shuffle_pic.loadFromFile(Imgs_directory"shuffle.png");
 	shuffle_button.setTexture(&shuffle_pic);
 	shuffle_sprite.setTexture(shuffle_pic);
 	shuffle_sprite.setPosition(150, 550);
@@ -1173,7 +1230,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	songs_list.setSize(sf::Vector2f(200, 50));
 
 	songs_list.setPosition(0, 0);
-	song_pic.loadFromFile("songs 200  unpressed.png");
+	song_pic.loadFromFile(Imgs_directory"songs 200  unpressed.png");
 	songs_list.setTexture(&song_pic);
 	song_sprite.setTexture(song_pic);
 	song_sprite.setPosition(0, 0);
@@ -1183,7 +1240,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	artist_list.setSize(sf::Vector2f(200, 50));
 
 	artist_list.setPosition(200, 0);
-	artist_pic.loadFromFile("artists pressed.png");
+	artist_pic.loadFromFile(Imgs_directory"artists pressed.png");
 	artist_list.setTexture(&artist_pic);
 	artist_sprite.setTexture(artist_pic);
 	artist_sprite.setPosition(200, 0);
@@ -1194,7 +1251,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 
 	album_list.setSize(sf::Vector2f(200, 50));
 	album_list.setPosition(400, 0);
-	album_pic.loadFromFile("albums unpressed.png");
+	album_pic.loadFromFile(Imgs_directory"albums unpressed.png");
 	album_list.setTexture(&album_pic);
 	album_sprite.setTexture(album_pic);
 	album_sprite.setPosition(400, 0);
@@ -1204,7 +1261,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	genre_list.setSize(sf::Vector2f(200, 50));
 
 	genre_list.setPosition(600, 0);
-	genre_pic.loadFromFile("genres unpressed.png");
+	genre_pic.loadFromFile(Imgs_directory"genres unpressed.png");
 	genre_list.setTexture(&genre_pic);
 	genre_sprite.setTexture(genre_pic);
 	genre_sprite.setPosition(600, 0);
@@ -1214,8 +1271,8 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 
 
 	back_pic.setSize(sf::Vector2f(800.0f, 600.0f));
-	background_texture.loadFromFile("wallpaper dark final final.png");
-	if (!background_texture.loadFromFile("wallpaper dark final final.png")) {
+	background_texture.loadFromFile(Imgs_directory"wallpaper dark final final.png");
+	if (!background_texture.loadFromFile(Imgs_directory"wallpaper dark final final.png")) {
 		cout << "error while loading the background";
 	}
 	back_pic.setTexture(&background_texture);
@@ -1376,7 +1433,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	Font use_font;
 	RectangleShape genre_result[20];
 	Text genre_result_text[20];
-	use_font.loadFromFile("Roboto-ThinItalic.ttf");
+	use_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
 
 	vector<string> to_be_shown = View_all(2);
 
@@ -1402,7 +1459,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
 	play_button.setPosition(400, 540);
-	play_pic.loadFromFile("pause-play.png");
+	play_pic.loadFromFile(Imgs_directory"pause-play.png");
 	play_button.setTexture(&play_pic);
 	play_sprite.setTexture(play_pic);
 	play_sprite.setOrigin(25, 25);
@@ -1413,7 +1470,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	backward_button.setSize(sf::Vector2f(75, 75));
 	backward_button.setOrigin(25, 25);
 	backward_button.setPosition(300, 540);
-	backward_pic.loadFromFile("previous.png");
+	backward_pic.loadFromFile(Imgs_directory"previous.png");
 	backward_button.setTexture(&backward_pic);
 	backward_sprite.setTexture(backward_pic);
 	backward_sprite.setOrigin(25, 25);
@@ -1425,7 +1482,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	forward_button.setSize(sf::Vector2f(75, 75));
 	forward_button.setOrigin(25, 25);
 	forward_button.setPosition(500, 540);
-	forward_pic.loadFromFile("next.png");
+	forward_pic.loadFromFile(Imgs_directory"next.png");
 	forward_button.setTexture(&forward_pic);
 	forward_sprite.setTexture(forward_pic);
 	forward_sprite.setOrigin(25, 25);
@@ -1436,7 +1493,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	shuffle_button.setSize(sf::Vector2f(75, 75));
 	shuffle_button.setOrigin(37.5, 37.5);
 	shuffle_button.setPosition(150, 550);
-	shuffle_pic.loadFromFile("shuffle.png");
+	shuffle_pic.loadFromFile(Imgs_directory"shuffle.png");
 	shuffle_button.setTexture(&shuffle_pic);
 	shuffle_sprite.setTexture(shuffle_pic);
 	shuffle_sprite.setPosition(150, 550);
@@ -1450,7 +1507,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	songs_list.setSize(sf::Vector2f(200, 50));
 
 	songs_list.setPosition(0, 0);
-	song_pic.loadFromFile("songs 200  unpressed.png");
+	song_pic.loadFromFile(Imgs_directory"songs 200  unpressed.png");
 	songs_list.setTexture(&song_pic);
 	song_sprite.setTexture(song_pic);
 	song_sprite.setPosition(0, 0);
@@ -1460,7 +1517,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	artist_list.setSize(sf::Vector2f(200, 50));
 
 	artist_list.setPosition(200, 0);
-	artist_pic.loadFromFile("artists unpressed.png");
+	artist_pic.loadFromFile(Imgs_directory"artists unpressed.png");
 	artist_list.setTexture(&artist_pic);
 	artist_sprite.setTexture(artist_pic);
 	artist_sprite.setPosition(200, 0);
@@ -1471,7 +1528,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 	album_list.setSize(sf::Vector2f(200, 50));
 	album_list.setPosition(400, 0);
-	album_pic.loadFromFile("albums unpressed.png");
+	album_pic.loadFromFile(Imgs_directory"albums unpressed.png");
 	album_list.setTexture(&album_pic);
 	album_sprite.setTexture(album_pic);
 	album_sprite.setPosition(400, 0);
@@ -1481,7 +1538,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	genre_list.setSize(sf::Vector2f(200, 50));
 
 	genre_list.setPosition(600, 0);
-	genre_pic.loadFromFile("genres  pressed.png");
+	genre_pic.loadFromFile(Imgs_directory"genres  pressed.png");
 	genre_list.setTexture(&genre_pic);
 	genre_sprite.setTexture(genre_pic);
 	genre_sprite.setPosition(600, 0);
@@ -1491,8 +1548,8 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 
 	back_pic.setSize(sf::Vector2f(800.0f, 600.0f));
-	background_texture.loadFromFile("wallpaper dark final final.png");
-	if (!background_texture.loadFromFile("wallpaper dark final final.png")) {
+	background_texture.loadFromFile(Imgs_directory"wallpaper dark final final.png");
+	if (!background_texture.loadFromFile(Imgs_directory"wallpaper dark final final.png")) {
 		cout << "error while loading the background";
 	}
 	back_pic.setTexture(&background_texture);
@@ -1622,47 +1679,6 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 
 
-void datapage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position)
-{
-	window.clear();
-	sf::RectangleShape back_pic;
-	sf::Texture background_texture;
-	sf::RectangleShape done_button;
-	sf::Texture done_texture;
-	sf::Sprite donesprite;
-
-	done_button.setSize(sf::Vector2f(165, 96));
-	done_button.setOrigin(85, 143);
-	done_button.setPosition(300, 375);
-	done_texture.loadFromFile("done button - Copy.png");
-	done_button.setTexture(&done_texture);
-	donesprite.setTexture(done_texture);
-	donesprite.setOrigin(85, 143);
-	donesprite.setPosition(300, 375);
-
-
-	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
-	background_texture.loadFromFile("datawindow - Copy.png");
-	if (!background_texture.loadFromFile("datawindow - Copy.png")) {
-		cout << "error while loading the background";
-	}
-	back_pic.setTexture(&background_texture);
-
-	window.draw(back_pic);
-	window.draw(done_button);
-
-	if (focus(done_button.getGlobalBounds(), mouse_position))
-	{
-		if (event.type == sf::Event::MouseButtonPressed &&event.mouseButton.button == sf::Mouse::Left)
-		{
-			window.close();
-		}
-	}
-
-
-}
-
-
 
 void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f& mouse_position)
 {
@@ -1679,7 +1695,7 @@ void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f
 	login_button.setSize(sf::Vector2f(165, 96));
 	login_button.setOrigin(85, 143);
 	login_button.setPosition(263, 244);
-	login_texture.loadFromFile("login button.png");
+	login_texture.loadFromFile(Imgs_directory"login button.png");
 	login_button.setTexture(&login_texture);
 	loginsprite.setTexture(login_texture);
 	loginsprite.setOrigin(85, 143);
@@ -1689,7 +1705,7 @@ void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f
 	sign_button.setSize(sf::Vector2f(165, 96));
 	sign_button.setOrigin(83, 143);
 	sign_button.setPosition(100, 244);
-	sign_texture.loadFromFile("sign up.png");
+	sign_texture.loadFromFile(Imgs_directory"sign up.png");
 	sign_button.setTexture(&sign_texture);
 	signsprite.setTexture(sign_texture);
 	signsprite.setOrigin(83, 143);
@@ -1697,8 +1713,8 @@ void wpage(sf::RenderWindow& window, sf::Event& event, string& mod, sf::Vector2f
 
 
 	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
-	background_texture.loadFromFile("welcoming page clean.png");
-	if (!background_texture.loadFromFile("welcoming page clean.png")) {
+	background_texture.loadFromFile(Imgs_directory"welcoming page clean.png");
+	if (!background_texture.loadFromFile(Imgs_directory"welcoming page clean.png")) {
 		cout << "error while loading the background";
 	}
 	back_pic.setTexture(&background_texture);
@@ -1839,12 +1855,12 @@ void READ_RATING()
 {
 	fstream Rating_file;
 	Rating_file.open(users_directory + current_user + ".txt");
-	for (int i = 0; i < songs.size(); i++)
+	int counter = 0;
+	for (int i = 0; i < songs.size()+ counter; i++)
 	{
 		Rating_file >> song_data[i].rating;
 		if (song_data[i].rating <= Low_rating_activator && song_data[i].rating > 0)
 		{
-			int counter = 0;
 			song_data[i].display = false;
 			while (true)
 			{
@@ -1960,4 +1976,47 @@ void check_order(int& index_of_playing_song) {
 	if (index_of_playing_song > songs.size() - 1) {
 		index_of_playing_song = 0;
 	}
+}
+
+
+
+
+vector<string> sorting(int x)
+{
+	
+	
+
+	vector<string> names;
+	names.clear();
+
+	cout << "kosmak \n"; 
+	if (x == 1)
+	{
+		for (int i = Highest_rating; i >= 0; i--) {
+			for (int j = 0; j < songs.size(); j++) {
+				if (song_data[j].rating == i) {
+
+					names.push_back(song_data[j].name);
+
+				}
+			}
+		}
+	}
+	else if (x == 2)
+	{
+		for (int i = 0; i <= Highest_rating; i++) {
+			for (int j = 0; j < songs.size(); j++) {
+				if (song_data[j].rating == i) {
+					cout << counter + 1 << " ) " << song_data[j].name << endl;
+					names.push_back(song_data[j].name);
+
+				}
+			}
+		}
+	}
+	
+	
+
+	return names; 
+	
 }
