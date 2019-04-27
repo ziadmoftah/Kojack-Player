@@ -336,7 +336,7 @@ void signup()
 	system("cls");
 }
 
-// Rating functions *******************************************************************************************************************************************
+// Rating functions ******************************************************************************************************************************************
 
 void rate(int x, string name)
 {
@@ -378,7 +378,6 @@ void rate(int x, string name)
 
 void Low_Rating(int x, string name)
 {
-	playSound();
 	for (int i = 0; i < songs.size(); i++)
 	{
 		if (name == song_data[i].name)
@@ -386,10 +385,10 @@ void Low_Rating(int x, string name)
 			song_data[i].display = false;
 		}
 	}
+	playSound();
 }
 
 // Searching functions ***************************************************************************************************************************************
-
 
 void search_display(string searched, int choice, int year)
 {
