@@ -15,8 +15,8 @@
 #include <random>       
 #include <chrono> 
 #include <conio.h>
-#define directory "D:\\projects\\Kojack-Player-GUI\\Kojack player\\Kojack player\\resources/"
-#define users_directory "C:\\Users\\MhmdAdnan\\source\\repos\\FINALONE\\FINALONE\\data/" 
+#define directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\resources/"
+#define users_directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\Data/" 
 #define max_numsongs 10000
 #define Low_rating_activator 2
 
@@ -72,7 +72,7 @@ struct user
 {
 	string name;
 	string password;
-}users_data[10];
+}users_data[16];
 
 
 
@@ -91,8 +91,8 @@ void get_all_files_names_within_folder(string folder);
 void playMusic(const std::string& filename, int &play_num, bool& playing, sf::Music& music);
 vector<string> View_song(int choice, string name);
 void read_users();
-void signup();
-void login();
+bool signup(string username, string password);
+bool login(string current_user, string password);
 void READ_RATING();
 void Read_MetaData();
 vector<string> View_all(int choice);
@@ -117,50 +117,250 @@ vector <string> songs_by_a_default_thing;
 int showanythingiwant;
 sf::Music music;
 
+
+///// welcome window 
+sf::Vector2f mouse_position;
+sf::RectangleShape back_pic;
+sf::Texture background_texture;
+sf::RectangleShape done_button;
+sf::Texture done_texture;
+sf::Sprite donesprite;
+std::string userinput;
+sf::Text username;
+sf::RectangleShape usertextbox;
+sf::RectangleShape pwtextbox;
+sf::Text password;
+std::string pwinput;
+string shown_password =""; 
+sf::Text error_message[2];
+sf::Font error_message_font; 
+///////*
+
 int main() {
 	get_all_files_names_within_folder(directory);
-	sf::Vector2f mouse_position;
+	read_users();
 	string mod = "welcome";
-	//cout << songs.size(); 
+
 	sf::RenderWindow starting_window(sf::VideoMode(600, 300), "Kojack Player", sf::Style::Default);
+
+	error_message_font.loadFromFile("Roboto-ThinItalic.ttf");
+	error_message[0].setFont(error_message_font); 
+	error_message[0].setCharacterSize(25);
+	error_message[0].setFillColor(sf::Color::Red); 
+	error_message[0].setStyle(sf::Text::Bold); 
+	error_message[0].setPosition(50, 135);
+	error_message[0].setString("Username already taken");
+
+
+
+	error_message[1].setFont(error_message_font);
+	error_message[1].setCharacterSize(25);
+	error_message[1].setFillColor(sf::Color::Red);
+	error_message[1].setStyle(sf::Text::Bold);
+	error_message[1].setPosition(50, 205);
+	error_message[1].setString("Invalid username or password");
+
+
+	usertextbox.setSize(sf::Vector2f(175, 21));
+	usertextbox.setOrigin(85, 143);
+	usertextbox.setPosition(265, 242);
+
+
+	pwtextbox.setSize(sf::Vector2f(175, 21));
+	pwtextbox.setOrigin(85, 143);
+	pwtextbox.setPosition(265, 319);
+
+
+	done_button.setSize(sf::Vector2f(165, 96));
+	done_button.setOrigin(85, 143);
+	done_button.setPosition(300, 375);
+	done_texture.loadFromFile("done button.png");
+	done_button.setTexture(&done_texture);
+	donesprite.setTexture(done_texture);
+	donesprite.setOrigin(85, 143);
+	donesprite.setPosition(300, 375);
+
+
+	sf::Font myfont;
+	myfont.loadFromFile("parkway lush.ttf");
+	username.setFont(myfont);
+	username.setFillColor(sf::Color::Blue);
+	username.setPosition(265, 235);
+	username.setOrigin(85, 143);
+
+
+	password.setFont(myfont);
+	password.setFillColor(sf::Color::Blue);
+	password.setPosition(265, 311);
+	password.setOrigin(85, 143);
+
+	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
+	background_texture.loadFromFile("datawindow.png");
+	if (!background_texture.loadFromFile("datawindow.png")) {
+		cout << "error while loading the background";
+	}
+	back_pic.setTexture(&background_texture);
+	int windicator = 0;
 	while (starting_window.isOpen())
 	{
 		sf::Event starting;
-		mouse_position.x = sf::Mouse::getPosition(starting_window).x;
-		mouse_position.y = sf::Mouse::getPosition(starting_window).y;
-		if (mod == "welcome")
-		{
-			starting_window.clear();
-			wpage(starting_window, starting, mod, mouse_position);
-
-
-		}
-		if (mod == "login")
-		{
-			starting_window.clear();
-			datapage(starting_window, starting, mod, mouse_position);
-
-		}
-		if (mod == "sign up")
-		{
-			starting_window.clear();
-			datapage(starting_window, starting, mod, mouse_position);
-
-		}
 		while (starting_window.pollEvent(starting))
 		{
+
 			if (starting.type == sf::Event::Closed) {
 				starting_window.close();
-				return 0;
 			}
+			mouse_position.x = sf::Mouse::getPosition(starting_window).x;
+			mouse_position.y = sf::Mouse::getPosition(starting_window).y;
+			cout << mouse_position.x << "\t\t" << mouse_position.y << endl;
+			if (mod == "welcome")
+			{
+				starting_window.clear();
+				wpage(starting_window, starting, mod, mouse_position);
 
+			}
+			if (mod == "login")
+			{
+				starting_window.clear();
+				starting_window.draw(back_pic);
+				starting_window.draw(done_button);
+				starting_window.draw(usertextbox);
+				starting_window.draw(pwtextbox);
+				if (focus(usertextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 1;
+					}
+				}
+				if (focus(pwtextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 2;
+					}
+				}
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 1)
+					{
+						userinput += starting.text.unicode;
+						username.setString(userinput);
+					}
+					if (starting.text.unicode == 8 && userinput.size() > 0 && windicator == 1)
+					{
+						userinput.erase(userinput.begin() + userinput.size() - 1);
+						username.setString(userinput);
+					}
+
+				}
+				starting_window.draw(username);
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 2)
+					{
+						pwinput += starting.text.unicode;
+						shown_password += "*";
+						password.setString(shown_password);
+					}
+					else if (starting.text.unicode == 8 && pwinput.size() > 0 && windicator == 2 && shown_password.size() > 0)
+					{
+						pwinput.erase(pwinput.begin() + pwinput.size() - 1);
+						shown_password.erase( shown_password.size()-1);
+						password.setString(shown_password);
+					}
+
+
+				}
+				starting_window.draw(password);
+				if (focus(done_button.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						if (login(userinput, pwinput) == true) {
+							starting_window.close();
+						}
+						else {
+							starting_window.draw(error_message[1]); 
+						}
+					}
+				}
+			}
+			if (mod == "sign up")
+			{
+
+				starting_window.clear();
+				starting_window.draw(back_pic);
+				starting_window.draw(done_button);
+				starting_window.draw(usertextbox);
+				starting_window.draw(pwtextbox);
+				if (focus(usertextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 1;
+					}
+				}
+				if (focus(pwtextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 2;
+					}
+				}
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 1)
+					{
+						userinput += starting.text.unicode;
+						username.setString(userinput);
+					}
+					if (starting.text.unicode == 8 && userinput.size() > 0 && windicator == 1)
+					{
+						userinput.erase(userinput.begin() + userinput.size() - 1);
+						username.setString(userinput);
+					}
+
+				}
+				starting_window.draw(username);
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 2)
+					{
+						pwinput += starting.text.unicode;
+						shown_password += "*";
+						password.setString(shown_password);
+					}
+					else if (starting.text.unicode == 8 && pwinput.size() > 0 && windicator == 2 && shown_password.size() > 0)
+					{
+						pwinput.erase(pwinput.begin() + pwinput.size() - 1);
+						shown_password.erase(shown_password.size() - 1);
+						password.setString(shown_password);
+					}
+
+
+				}
+				starting_window.draw(password);
+				if (focus(done_button.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						if (signup(userinput, pwinput) == true )
+							starting_window.close();
+						else {
+							starting_window.draw(error_message[0]); 
+						}
+					}
+				}
+			}
+			starting_window.display();
+			starting_window.clear();
 
 		}
 
-		starting_window.display();
-		starting_window.clear();
-
 	}
+
+
 
 
 
@@ -227,9 +427,9 @@ bool focus(sf::FloatRect sprite, sf::Vector2f mouse_position) {
 void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event& event, string& mod, sf::Music& music, bool& playing) {
 	window.clear();
 
-	
+
 	while_playing.use_font.loadFromFile("Roboto-ThinItalic.ttf");
-	
+
 
 	float x = 55;
 	for (int i = 0; i < songs.size(); ++i) {
@@ -247,7 +447,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	}
-	
+
 	while_playing.search_box.setRadius(30);
 	while_playing.search_box.setPosition(10, 530);
 	while_playing.search_box.setFillColor(sf::Color::Green);
@@ -265,7 +465,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.rating_bar.setPosition(580, 535);
 	while_playing.rating_bar.setFillColor(sf::Color::Green);
 
-	
+
 
 
 
@@ -623,7 +823,7 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 	}
 
-	
+
 
 
 
@@ -1547,13 +1747,10 @@ void read_users()
 
 
 
-void signup()
+bool signup( string username , string password )
 {
 	bool taken = false;
-	cout << "Please enter your Username : ";
-	string username;
-	string password;
-	cin >> username;
+	
 	for (int i = 0; i < NumUsers; i++)
 	{
 		if (username == users_data[i].name)
@@ -1564,14 +1761,14 @@ void signup()
 	}
 	if (!taken)
 	{
+		
 		cout << "\nPlease enter your Password : ";
-		cin >> password;
 	}
-	else
-	{
-		return signup();
-		return;
+	else {
+		return false;
 	}
+	
+	
 	NumUsers++;
 
 	// updates user info file
@@ -1594,36 +1791,37 @@ void signup()
 	new_file.open(users_directory + username + ".txt");
 	for (int i = 0; i < songs.size(); i++)
 		cout << 0 << endl;
-	system("cls");
+	return true;
+	
 }
 
 
 
-void login()
+bool login( string current_user , string password)
 {
-	string password;
 	bool Logedin = false;
 	while (true)
 	{
 		cout << "Username : ";
-		cin >> current_user;
 		for (int i = 0; i < NumUsers; i++)
 		{
 			if (current_user == users_data[i].name)
 			{
 				cout << "\nPassword : ";
-				cin >> password;
+				//cin >> password;
 				if (password == users_data[i].password)
 				{
 					Logedin = true;
-					break;
+					
 				}
 			}
 		}
 		if (Logedin)
-			break;
-		else
+			return true;
+		else {
+			return false;
 			cout << "invalid username or password" << endl;
+		}
 
 	}
 
