@@ -71,6 +71,7 @@ struct second_window {
 	Font use_font;
 	sf::RectangleShape sorting_button[2]; 
 	sf::Texture sorting_pic[2]; 
+	sf::Texture rating_pic; 
 }while_playing;
 struct user
 {
@@ -103,6 +104,7 @@ void playback(vector<string>names, int play_num);
 void shuffle(vector<string>ToShuffle);
 void check_order(int& index_of_playing_song);
 vector<string> sorting(int x); 
+void rate(string name, int& rating);
 
 
 
@@ -123,6 +125,8 @@ vector <string> songs_by_a_default_thing;
 int showanythingiwant;
 sf::Music music;
 int number_of_current_songs = 0; 
+int rating = 0;
+string playing_song_name= ""; 
 
 
 
@@ -492,8 +496,67 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	while_playing.rating_bar.setSize(sf::Vector2f(200, 40));
-	while_playing.rating_bar.setPosition(580, 535);
-	while_playing.rating_bar.setFillColor(sf::Color::Green);
+	while_playing.rating_bar.setPosition(600, 535);
+	while_playing.rating_pic.loadFromFile(Imgs_directory"rating 0.png");
+	while_playing.rating_bar.setTexture(&while_playing.rating_pic);
+
+	if (rating == 1)
+	{
+		while_playing.rating_pic.loadFromFile(Imgs_directory"rating1.png");
+	}
+	if (rating == 2)
+	{
+		while_playing.rating_pic.loadFromFile(Imgs_directory"rating2.png");
+	}
+	if (rating == 3)
+	{
+		while_playing.rating_pic.loadFromFile(Imgs_directory"rating3.png");
+	}
+	if (rating == 4)
+	{
+		while_playing.rating_pic.loadFromFile(Imgs_directory"rating4.png");
+	}
+	if (rating == 5)
+	{
+		while_playing.rating_pic.loadFromFile(Imgs_directory"rating5.png");
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 600 && mouse_position.x < 635)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 1;
+			rate(playing_song_name, rating);
+			
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 640 && mouse_position.x < 675)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 2;
+			rate(playing_song_name, rating);
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 680 && mouse_position.x < 715)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 3;
+			rate(playing_song_name, rating);
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 720 && mouse_position.x < 755)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 4;
+			rate(playing_song_name, rating);
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 760 && mouse_position.x < 795)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 5;
+			rate(playing_song_name, rating);
+		}
+	}
+	
 
 
 
@@ -688,14 +751,17 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 		{
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left)
 			{
+				rating = song_data[i].rating; 
 				if (shufflle == false) {
 
 					index_of_playing_song = i;
 					playMusic(songs[index_of_playing_song], index_of_playing_song, playing, music);
+					playing_song_name = songs[index_of_playing_song]; 
 				}
 				else {
 					index_of_playing_song = shuffled[index_of_playing_song];
 					playMusic(songs[shuffled[index_of_playing_song]], index_of_playing_song, playing, music);
+					playing_song_name = songs[shuffled[index_of_playing_song]]; 
 				}
 			}
 		}
@@ -2020,4 +2086,29 @@ vector<string> sorting(int x)
 
 	return names; 
 	
+}
+
+
+void rate( string name , int& rating)
+{
+	if (rating < 2) {
+		music.openFromFile("Tda5ol.wav"); 
+		music.play(); 
+	}
+	fstream Rating_file;
+	Rating_file.open(users_directory + current_user + ".txt");
+	for (int i = 0; i < songs.size(); i++)
+	{
+		if (name == song_data[i].name)
+		{
+			song_data[i].rating = rating;
+			Rating_file << song_data[i].rating << endl;
+		}
+		else
+		{
+			Rating_file << song_data[i].rating << endl;
+		}
+
+	}
+	Rating_file.close();
 }
