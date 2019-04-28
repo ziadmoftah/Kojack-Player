@@ -69,9 +69,9 @@ struct second_window {
 	RectangleShape music_box[20];
 	Text name_music[20];
 	Font use_font;
-	sf::RectangleShape sorting_button[2]; 
-	sf::Texture sorting_pic[2]; 
-	sf::Texture rating_pic; 
+	sf::RectangleShape sorting_button[2];
+	sf::Texture sorting_pic[2];
+	sf::Texture rating_pic;
 }while_playing;
 struct user
 {
@@ -103,7 +103,7 @@ vector<string> View_all(int choice);
 void playback(vector<string>names, int play_num);
 void shuffle(vector<string>ToShuffle);
 void check_order(int& index_of_playing_song);
-vector<string> sorting(int x); 
+vector<string> sorting(int x);
 void rate(string name, int& rating);
 
 
@@ -118,15 +118,15 @@ int shuffled[max_numsongs], counter = 0;
 bool shufflle = false;
 string current_user;
 vector<string> songs;
-vector<string> sorted_songs; 
+vector<string> sorted_songs;
 bool is_songs_sorted = false;
 bool playing = false;
 vector <string> songs_by_a_default_thing;
 int showanythingiwant;
 sf::Music music;
-int number_of_current_songs = 0; 
+int number_of_current_songs = 0;
 int rating = 0;
-string playing_song_name= ""; 
+string playing_song_name = "";
 
 
 
@@ -143,24 +143,24 @@ sf::RectangleShape usertextbox;
 sf::RectangleShape pwtextbox;
 sf::Text password;
 std::string pwinput;
-string shown_password =""; 
+string shown_password = "";
 sf::Text error_message[2];
-sf::Font error_message_font; 
+sf::Font error_message_font;
 ///////*
 
 int main() {
 	get_all_files_names_within_folder(directory);
 	read_users();
-	
+
 	string mod = "welcome";
 
 	sf::RenderWindow starting_window(sf::VideoMode(600, 300), "Kojack Player", sf::Style::Default);
 
 	error_message_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
-	error_message[0].setFont(error_message_font); 
+	error_message[0].setFont(error_message_font);
 	error_message[0].setCharacterSize(25);
-	error_message[0].setFillColor(sf::Color::Red); 
-	error_message[0].setStyle(sf::Text::Bold); 
+	error_message[0].setFillColor(sf::Color::Red);
+	error_message[0].setStyle(sf::Text::Bold);
 	error_message[0].setPosition(50, 135);
 	error_message[0].setString("Username already taken");
 
@@ -187,7 +187,7 @@ int main() {
 	done_button.setSize(sf::Vector2f(165, 96));
 	done_button.setOrigin(85, 143);
 	done_button.setPosition(300, 375);
-	done_texture.loadFromFile( Imgs_directory"done button.png" );
+	done_texture.loadFromFile(Imgs_directory"done button.png");
 	done_button.setTexture(&done_texture);
 	donesprite.setTexture(done_texture);
 	donesprite.setOrigin(85, 143);
@@ -281,7 +281,7 @@ int main() {
 					else if (starting.text.unicode == 8 && pwinput.size() > 0 && windicator == 2 && shown_password.size() > 0)
 					{
 						pwinput.erase(pwinput.begin() + pwinput.size() - 1);
-						shown_password.erase( shown_password.size()-1);
+						shown_password.erase(shown_password.size() - 1);
 						password.setString(shown_password);
 					}
 
@@ -296,7 +296,7 @@ int main() {
 							starting_window.close();
 						}
 						else {
-							starting_window.draw(error_message[1]); 
+							starting_window.draw(error_message[1]);
 						}
 					}
 				}
@@ -360,10 +360,10 @@ int main() {
 				{
 					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
 					{
-						if (signup(userinput, pwinput) == true )
+						if (signup(userinput, pwinput) == true)
 							starting_window.close();
 						else {
-							starting_window.draw(error_message[0]); 
+							starting_window.draw(error_message[0]);
 						}
 					}
 				}
@@ -383,11 +383,11 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Kojack Player", sf::Style::Default);
 	mod = "song";
 	Read_MetaData();
+	READ_RATING();
 	while (window.isOpen())
 	{
 		sf::Event event;
 
-		READ_RATING();
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed) {
@@ -447,7 +447,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.use_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
 
 
-	while_playing.sorting_button[0].setSize(sf::Vector2f(50 , 75 )); 
+	while_playing.sorting_button[0].setSize(sf::Vector2f(50, 75));
 	while_playing.sorting_pic[0].loadFromFile(Imgs_directory"arrow dn.png");
 	while_playing.sorting_button[0].setPosition(550, 100);
 	while_playing.sorting_button[0].setTexture(&while_playing.sorting_pic[0]);
@@ -460,8 +460,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.sorting_button[1].setFillColor(sf::Color::Magenta);
 
 	float x = 55;
-	for (int i = 0; i < songs.size(); ++i) {
-
+	for (int i = 0; i < songs.size(); ++i){
 		while_playing.music_box[i].setSize(Vector2f(400, 30));
 		while_playing.music_box[i].setPosition(3, x);
 		while_playing.music_box[i].setFillColor(Color::Transparent);
@@ -525,7 +524,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			rating = 1;
 			rate(playing_song_name, rating);
-			
+
 		}
 	}
 	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 640 && mouse_position.x < 675)
@@ -556,7 +555,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 			rate(playing_song_name, rating);
 		}
 	}
-	
+
 
 
 
@@ -602,7 +601,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.shuffle_button.setOrigin(37.5, 37.5);
 	while_playing.shuffle_button.setPosition(145, 565);
 	if (!shufflle) {
-	while_playing.shuffle_pic.loadFromFile(Imgs_directory"not shuffled.png");
+		while_playing.shuffle_pic.loadFromFile(Imgs_directory"not shuffled.png");
 	}
 	else {
 		while_playing.shuffle_pic.loadFromFile(Imgs_directory"shuffled.png");
@@ -687,13 +686,13 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	if (focus(while_playing.album_sprite.getGlobalBounds(), mouse_position )) {
+	if (focus(while_playing.album_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "album";
 			songs_by_a_default_thing.clear();
 		}
 	}
-	if (focus(while_playing.genre_sprite.getGlobalBounds(), mouse_position )) {
+	if (focus(while_playing.genre_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "genre";
 			songs_by_a_default_thing.clear();
@@ -744,24 +743,24 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	
+
 	for (int i = 0; i < songs.size(); i++) {
 
 		if (focus(while_playing.music_box[i].getGlobalBounds(), mouse_position))
 		{
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left)
 			{
-				rating = song_data[i].rating; 
+				rating = song_data[i].rating;
 				if (shufflle == false) {
 
 					index_of_playing_song = i;
 					playMusic(songs[index_of_playing_song], index_of_playing_song, playing, music);
-					playing_song_name = songs[index_of_playing_song]; 
+					playing_song_name = songs[index_of_playing_song];
 				}
 				else {
 					index_of_playing_song = shuffled[index_of_playing_song];
 					playMusic(songs[shuffled[index_of_playing_song]], index_of_playing_song, playing, music);
-					playing_song_name = songs[shuffled[index_of_playing_song]]; 
+					playing_song_name = songs[shuffled[index_of_playing_song]];
 				}
 			}
 		}
@@ -813,14 +812,14 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	// from high to low 
-	if (focus(while_playing.sorting_button[0].getGlobalBounds(), mouse_position)){
+	if (focus(while_playing.sorting_button[0].getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			if (is_songs_sorted == false) {
 				is_songs_sorted = true;
-				sorted_songs = sorting(1) ;
+				sorted_songs = sorting(1);
 			}
 			else if (is_songs_sorted == true) {
-				is_songs_sorted = false ;
+				is_songs_sorted = false;
 			}
 		}
 	}
@@ -884,7 +883,7 @@ void get_all_files_names_within_folder(string folder)
 				song_data[i].name.erase(song_data[i].name.end() - 4, song_data[i].name.end());
 				songs.push_back(song_data[i].name);
 				i++;
-				number_of_current_songs++; 
+				number_of_current_songs++;
 			}
 		} while (::FindNextFile(hFind, &fd));
 		::FindClose(hFind);
@@ -1835,10 +1834,10 @@ void read_users()
 
 
 
-bool signup( string username , string password )
+bool signup(string username, string password)
 {
 	bool taken = false;
-	
+
 	for (int i = 0; i < NumUsers; i++)
 	{
 		if (username == users_data[i].name)
@@ -1849,14 +1848,14 @@ bool signup( string username , string password )
 	}
 	if (!taken)
 	{
-		
+
 		cout << "\nPlease enter your Password : ";
 	}
 	else {
 		return false;
 	}
-	
-	
+
+
 	NumUsers++;
 
 	// updates user info file
@@ -1880,12 +1879,12 @@ bool signup( string username , string password )
 	for (int i = 0; i < songs.size(); i++)
 		cout << 0 << endl;
 	return true;
-	
+
 }
 
 
 
-bool login( string current_user , string password)
+bool login(string current_user, string password)
 {
 	bool Logedin = false;
 	while (true)
@@ -1900,7 +1899,7 @@ bool login( string current_user , string password)
 				if (password == users_data[i].password)
 				{
 					Logedin = true;
-					
+
 				}
 			}
 		}
@@ -1923,7 +1922,7 @@ void READ_RATING()
 	fstream Rating_file;
 	Rating_file.open(users_directory + current_user + ".txt");
 	int counter = 0;
-	for (int i = 0; i < songs.size()+ counter; i++)
+	for (int i = 0; i < songs.size() + counter; i++)
 	{
 		Rating_file >> song_data[i].rating;
 		if (song_data[i].rating <= Low_rating_activator && song_data[i].rating > 0)
@@ -2050,13 +2049,13 @@ void check_order(int& index_of_playing_song) {
 
 vector<string> sorting(int x)
 {
-	
-	
+
+
 
 	vector<string> names;
 	names.clear();
 
-	cout << "kosmak \n"; 
+	cout << "kosmak \n";
 	if (x == 1)
 	{
 		for (int i = Highest_rating; i >= 0; i--) {
@@ -2081,19 +2080,19 @@ vector<string> sorting(int x)
 			}
 		}
 	}
-	
-	
 
-	return names; 
-	
+
+
+	return names;
+
 }
 
 
-void rate( string name , int& rating)
+void rate(string name, int& rating)
 {
 	if (rating < 2) {
-		music.openFromFile("Tda5ol.wav"); 
-		music.play(); 
+		music.openFromFile("Tda5ol.wav");
+		music.play();
 	}
 	fstream Rating_file;
 	Rating_file.open(users_directory + current_user + ".txt");
