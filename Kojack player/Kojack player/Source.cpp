@@ -15,9 +15,9 @@
 #include <random>       
 #include <chrono> 
 #include <conio.h>
-#define directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\resources/"
-#define users_directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\Data/" 
-#define Imgs_directory "C:\\Users\\lenovo\\Documents\\GitHub\\Kojack-Player\\Kojack player\\Kojack player\\Imgs/"
+#define directory "D:\\projects\\Kojack-Player-GUI\\Kojack player\\Kojack player\\resources/"
+#define users_directory "C:\\Users\\MhmdAdnan\\source\\repos\\FINALONE\\FINALONE\\data/" 
+#define Imgs_directory "C:\\Users\\MhmdAdnan\\source\\repos\\FINALONE\\FINALONE\\Imgs/"
 #define max_numsongs 10000
 #define Low_rating_activator 2
 #define Highest_rating 5
@@ -72,6 +72,7 @@ struct second_window {
 	sf::RectangleShape sorting_button[2];
 	sf::Texture sorting_pic[2];
 	sf::Texture rating_pic;
+	sf::Texture searching_pic;
 }while_playing;
 struct user
 {
@@ -106,7 +107,7 @@ void shuffle(vector<string>ToShuffle);
 void check_order(int& index_of_playing_song);
 vector<string> sorting(int x);
 void rate(string name, int& rating);
-
+vector<string>search_display(string searched, int choice);
 
 
 
@@ -120,6 +121,7 @@ bool shufflle = false;
 string current_user;
 vector<string> songs;
 vector<string> sorted_songs;
+vector<string> searching_results;
 int is_songs_sorted = 0;
 bool playing = false;
 vector <string> songs_by_a_default_thing;
@@ -128,7 +130,7 @@ sf::Music music;
 int number_of_current_songs = 0;
 int rating = 0;
 string playing_song_name = "";
-string userinput_search = ""; 
+string userinput_search = "";
 
 
 
@@ -197,7 +199,7 @@ int main() {
 
 
 	sf::Font myfont;
-	myfont.loadFromFile(Imgs_directory"parkway lush.ttf");
+	myfont.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
 	username.setFont(myfont);
 	username.setFillColor(sf::Color::Blue);
 	username.setPosition(265, 235);
@@ -383,7 +385,7 @@ int main() {
 
 
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Kojack Player", sf::Style::Default);
-	window.setKeyRepeatEnabled(false); 
+	window.setKeyRepeatEnabled(false);
 	mod = "song";
 	Read_MetaData();
 	READ_RATING();
@@ -463,7 +465,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	while_playing.sorting_button[1].setFillColor(sf::Color::Magenta);
 
 	float x = 55;
-	for (int i = 0; i < songs.size(); ++i){
+	for (int i = 0; i < songs.size(); ++i) {
 		while_playing.music_box[i].setSize(Vector2f(400, 30));
 		while_playing.music_box[i].setPosition(3, x);
 		while_playing.music_box[i].setFillColor(Color::Transparent);
@@ -476,7 +478,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 		else {
 			while_playing.name_music[i].setString(songs[i]);
 		}
-		if ( i == index_of_playing_song && !shufflle ) {
+		if (i == index_of_playing_song && !shufflle) {
 			while_playing.name_music[i].setColor(Color::Magenta);
 		}
 		else {
@@ -491,11 +493,13 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 	while_playing.search_box.setRadius(30);
 	while_playing.search_box.setPosition(10, 530);
-	while_playing.search_box.setFillColor(sf::Color::Green);
+	while_playing.search_box.setFillColor(sf::Color::White);
+	while_playing.searching_pic.loadFromFile(Imgs_directory"Searh icon.png");
+	while_playing.search_box.setTexture(&while_playing.searching_pic);
 	if (focus(while_playing.search_box.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-			searching_window(); 
-
+			searching_window();
+			
 		}
 	}
 
@@ -751,7 +755,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	cout << is_songs_sorted << endl; 
+	cout << is_songs_sorted << endl;
 	for (int i = 0; i < songs.size(); i++) {
 
 		if (focus(while_playing.music_box[i].getGlobalBounds(), mouse_position))
@@ -771,8 +775,8 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 						playing_song_name = sorted_songs[index_of_playing_song];
 					}
 				}
-				
-				if (shufflle){
+
+				if (shufflle) {
 					index_of_playing_song = shuffled[index_of_playing_song];
 					playMusic(songs[shuffled[index_of_playing_song]], index_of_playing_song, playing, music);
 					playing_song_name = songs[shuffled[index_of_playing_song]];
@@ -809,7 +813,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 				check_order(index_of_playing_song);
 				playMusic(songs[index_of_playing_song], index_of_playing_song, playing, music);
-				rating = song_data[index_of_playing_song].rating; 
+				rating = song_data[index_of_playing_song].rating;
 			}
 			else {
 				check_order(index_of_playing_song);
@@ -2076,7 +2080,7 @@ vector<string> sorting(int x)
 	vector<string> names;
 	names.clear();
 
-	
+
 	if (x == 1)
 	{
 		for (int i = Highest_rating; i >= 0; i--) {
@@ -2138,118 +2142,244 @@ void rate(string name, int& rating)
 
 void searching_window() {
 	//////////////////search_window///////////////////////////////////////
-	
-	
+
+
 
 			//seacrh window
-			sf::RenderWindow Searchwindow(sf::VideoMode(500, 500), "<Search_Window>");
+	sf::RenderWindow Searchwindow(sf::VideoMode(500, 500), "<Search_Window>");
 
-			Searchwindow.clear();
-			RectangleShape button_search[4];
-			RectangleShape search_text_box;
-			RectangleShape button_search_name[4];
-			Text name_button_search[4];
-			Texture texture;
-			texture.loadFromFile(Imgs_directory"kojackplayer_background.png");
-			Sprite sprite;
-			Vector2u size = texture.getSize();
-			sprite.setTexture(texture);
-			Font use_font;
-			use_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
-			Text search_text;
-
-			search_text.setCharacterSize(16);
-			search_text.setFont(use_font);
-			search_text.setFillColor(sf::Color::Blue);
-			search_text.setPosition(130, 200);
-			search_text.setStyle(Text::Bold);
-			search_text.setCharacterSize(28);
-			search_text_box.setSize(Vector2f(250, 40));
-			search_text_box.setPosition(130, 200);
-			search_text_box.setFillColor(Color::White);
+	Searchwindow.clear();
+	RectangleShape button_search[4];
+	RectangleShape search_text_box;
+	RectangleShape button_search_name[4];
+	Text name_button_search[4];
+	Texture texture;
+	Texture ok_texture;
+	Texture search_bar_texture;
+	texture.loadFromFile(Imgs_directory"kojackplayer_background.png");
+	ok_texture.loadFromFile(Imgs_directory"search bar button.png");
+	search_bar_texture.loadFromFile(Imgs_directory"search bar.png");
+	Sprite sprite;
+	Vector2u size = texture.getSize();
+	sprite.setTexture(texture);
+	Font use_font;
+	use_font.loadFromFile(Imgs_directory"Roboto-ThinItalic.ttf");
+	Text search_text;
+	CircleShape ok;
+	RectangleShape searching_results_box[10];
+	Text text_searching_results[10];
 
 
-			float x = 5;
-			for (int i = 0; i < 4; ++i) {
-				button_search[i].setSize(Vector2f(90, 40));
-				button_search[i].setPosition(x, 10);
-				button_search[i].setFillColor(Color::Transparent);
-				name_button_search[i].setFont(use_font);
-				name_button_search[i].setStyle(Text::Bold);
-				name_button_search[i].setColor(Color::Blue);
-				name_button_search[i].setPosition(x, 10);
-				name_button_search[i].setCharacterSize(32);
-				x += 130;
+	search_text.setCharacterSize(16);
+	search_text.setFont(use_font);
+	search_text.setFillColor(sf::Color::Black);
+	search_text.setPosition(180, 50);
+	search_text.setStyle(Text::Bold);
+	search_text.setCharacterSize(28);
+	search_text_box.setSize(Vector2f(350, 40));
+	search_text_box.setPosition(130, 50);
+	search_text_box.setFillColor(Color::White);
+	search_text_box.setTexture(&search_bar_texture);
+
+
+	
+
+	ok.setRadius(15);
+	ok.setPosition(130, 53);
+	ok.setFillColor(Color::White);
+    ok.setTexture(&ok_texture);
+	
+
+	
+
+	float x = 5;
+	for (int i = 0; i < 4; ++i) {
+		button_search[i].setSize(Vector2f(90, 40));
+		button_search[i].setPosition(x, 10);
+		button_search[i].setFillColor(Color::Transparent);
+		name_button_search[i].setFont(use_font);
+		name_button_search[i].setStyle(Text::Bold);
+		name_button_search[i].setColor(Color::Red);
+		name_button_search[i].setPosition(x, 10);
+		name_button_search[i].setCharacterSize(32);
+		x += 130;
 
 
 
+	}
+
+	name_button_search[0].setString("  Name");
+	name_button_search[1].setString("Album");
+	name_button_search[2].setString("artist");
+	name_button_search[3].setString("year");
+	
+	int showanything = 0;
+
+	while (Searchwindow.isOpen())
+	{
+		sf::Event starting_search;
+		while (Searchwindow.pollEvent(starting_search)) {
+			mouse_position.x = sf::Mouse::getPosition(Searchwindow).x;
+			mouse_position.y = sf::Mouse::getPosition(Searchwindow).y;
+
+			if (starting_search.type == sf::Event::Closed) {
+				Searchwindow.close();
+				searching_results.clear();
 			}
-
-			name_button_search[0].setString("  Name");
-			name_button_search[1].setString("Album");
-			name_button_search[2].setString("artist");
-			name_button_search[3].setString("year");
-			int windicator = 0;
-			int showanything = 0;
-			
-			while (Searchwindow.isOpen())
+			//text Entred
+			if (starting_search.type == sf::Event::TextEntered)
 			{
-				sf::Event starting_search;
-				while (Searchwindow.pollEvent(starting_search)) {
-					mouse_position.x = sf::Mouse::getPosition(Searchwindow).x;
-					mouse_position.y = sf::Mouse::getPosition(Searchwindow).y;
-					
-					if (starting_search.type == sf::Event::Closed)
-						Searchwindow.close();
-					
-					//button function 
-					for (int i = 0; i < 4; ++i) {
-						if (focus(button_search[i].getGlobalBounds(), mouse_position)) {
-							if (starting_search.type == sf::Event::MouseButtonPressed  && starting_search.mouseButton.button == sf::Mouse::Left) {
-								{
-									cout << "5555555";
+				if (starting_search.text.unicode < 128 && starting_search.text.unicode != 8)
+				{
+					userinput_search += starting_search.text.unicode;
+					search_text.setString(userinput_search);
+					cout << userinput_search;
+				}
+				if (starting_search.text.unicode == 8 && userinput_search.size() > 0)
+				{
+					userinput_search.erase(userinput_search.begin() + userinput_search.size() - 1);
+					search_text.setString(userinput_search);
+				}
+			}
+			//ok function
+			
+				if (focus(ok.getGlobalBounds(), mouse_position)) {
+					if (starting_search.type == sf::Event::MouseButtonPressed  && starting_search.mouseButton.button == sf::Mouse::Left) {
+						{
 
+							searching_results = search_display(userinput_search,showanything);
 
-
-
-								}
-
-							}
+							cout << "a7a";
 
 						}
+
+
 					}
+				}
+				
+				
+				float y = 120;
+				for (int i = 0; i < searching_results.size(); ++i) {
+					searching_results_box[i].setSize(Vector2f(110, 40));
+					searching_results_box[i].setPosition(6, y);
+					searching_results_box[i].setFillColor(Color::Transparent);
+					text_searching_results[i].setFont(use_font);
+					text_searching_results[i].setStyle(Text::Bold);
+					text_searching_results[i].setColor(Color::Black);
+					text_searching_results[i].setPosition(6, y);
+					text_searching_results[i].setCharacterSize(22);
+					text_searching_results[i].setString(searching_results[i]);
+					y += 45;
+				}
+			//button function 
+			for (int i = 0; i < 4; i++) {
+				if (focus(button_search[i].getGlobalBounds(), mouse_position)) {
+					if (starting_search.type == sf::Event::MouseButtonPressed  && starting_search.mouseButton.button == sf::Mouse::Left) {
+						{
+							showanything = i;
+							
+							
 
-					//text entred
-					if (starting_search.type == sf::Event::TextEntered)
-					{
-						if (starting_search.text.unicode < 128 && starting_search.text.unicode != 8)
-						{
-							userinput_search += starting_search.text.unicode;
-							search_text.setString(userinput_search);
-							cout << userinput_search;
+							
 						}
-						if (starting_search.text.unicode == 8 && userinput_search.size() > 0)
-						{
-							userinput_search.erase(userinput_search.begin() + userinput_search.size() - 1);
-							search_text.setString(userinput_search);
-						}
+
+						
 					}
 
 				}
-
-
-				Searchwindow.draw(sprite);
-				for (int i = 0; i < 4; i++) {
-					Searchwindow.draw(button_search[i]);
-					Searchwindow.draw(name_button_search[i]);
+			}
+			//playing button function
+			for (int i = 0; i < searching_results.size(); ++i) {
+				if (focus(text_searching_results[i].getGlobalBounds(), mouse_position)) {
+					if (starting_search.type == sf::Event::MouseButtonPressed  && starting_search.mouseButton.button == sf::Mouse::Left) {
+						playMusic(searching_results[i], i, playing, music);
+						
+					}
 				}
-				Searchwindow.draw(search_text_box);
-				Searchwindow.draw(search_text);
-
-				Searchwindow.display();
-
 			}
 
+		}
+		
 		
 
+		Searchwindow.draw(sprite);
+		
+		for (int i = 0; i < 4; i++) {
+			Searchwindow.draw(button_search[i]);
+			Searchwindow.draw(name_button_search[i]);
+		
+		}
+		for (int i = 0; i < searching_results.size(); i++) {
+			Searchwindow.draw(searching_results_box[i]);
+			Searchwindow.draw(text_searching_results[i]);
+		}
+		for (int i = 0; i < 4; ++i) {
+			if (showanything == i) {
+				Searchwindow.draw(search_text_box);
+
+			}
+		}
+		Searchwindow.draw(search_text);
+		Searchwindow.draw(ok);
+		
+		Searchwindow.display();
+
+	}
+
+
+
 }
+ vector<string>search_display(string searched, int choice)
+{
+	vector<string> ToPlay;
+	int year=0;
+	ToPlay.clear();
+	switch (choice)
+	{
+	case 0:
+		for (int i = 0; i < songs.size(); i++)
+		{
+			if (song_data[i].name.find(searched) < song_data[i].name.size())
+			{
+				ToPlay.push_back(song_data[i].name);
+				found = true;
+			
+			}
+		}
+		
+		break;
+	case 1:
+		for (int i = 0; i < songs.size(); i++)
+		{
+			if (song_data[i].album.find(searched) < song_data[i].album.size())
+			{
+				ToPlay.push_back(song_data[i].name);
+				found = true;
+			}
+		}
+		break;
+	case 2:
+		for (int i = 0; i < songs.size(); i++)
+		{
+			if (song_data[i].artist.find(searched) != -1)
+			{
+				ToPlay.push_back(song_data[i].name);
+				found = true;
+			}
+		}
+		break;
+	case 3:
+		for (int i = 0; i < songs.size(); i++)
+		{
+			if (song_data[i].year == year)
+			{
+				ToPlay.push_back(song_data[i].name);
+				found = true;
+			}
+		}
+		break;
+	}
+	return ToPlay;
+}
+
+
