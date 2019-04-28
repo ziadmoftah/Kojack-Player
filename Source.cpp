@@ -15,15 +15,15 @@
 #include <random>       
 #include <chrono> 
 #include <conio.h>
-#define directory "D:\\projects\\Kojack-Player-GUI\\Kojack player\\Kojack player\\resources/"
-#define users_directory "C:\\Users\\MhmdAdnan\\source\\repos\\FINALONE\\FINALONE\\data/" 
+#define directory "C:\\Users\\Omadex\\Desktop\\Kojack player\\resources/"
+#define users_directory "C:\\Users\\Omadex\\source\\repos\\Project6\\Project6\\data/" 
 #define max_numsongs 10000
 #define Low_rating_activator 2
 
 
 using namespace std;
 using namespace sf;
-
+int rating = 0;
 struct song
 {
 	string name;
@@ -61,20 +61,19 @@ struct second_window {
 	sf::Sprite song_sprite;
 	sf::Texture artist_pic;
 	sf::Sprite artist_sprite;
-	sf::RectangleShape search_box;
-	sf::Texture search_pic;
-	sf::Sprite search_sprite;
+	sf::CircleShape search_box;
 	sf::Text seacr_text;
 	sf::RectangleShape rating_bar;
 	RectangleShape music_box[20];
 	Text name_music[20];
 	Font use_font;
+	Texture ratingtext;
 }while_playing;
 struct user
 {
 	string name;
 	string password;
-}users_data[10];
+}users_data[16];
 
 
 
@@ -93,8 +92,8 @@ void get_all_files_names_within_folder(string folder);
 void playMusic(const std::string& filename, int &play_num, bool& playing, sf::Music& music);
 vector<string> View_song(int choice, string name);
 void read_users();
-void signup();
-void login();
+bool signup(string username, string password);
+bool login(string current_user, string password);
 void READ_RATING();
 void Read_MetaData();
 vector<string> View_all(int choice);
@@ -115,73 +114,273 @@ bool shufflle = false;
 string current_user;
 vector<string> songs;
 bool playing = false;
-vector <string> album_song;
-vector<string> artist_song;
-vector<string> genre_song;
+vector <string> songs_by_a_default_thing;
 int showanythingiwant;
 sf::Music music;
 
+
+///// welcome window 
+sf::Vector2f mouse_position;
+sf::RectangleShape back_pic;
+sf::Texture background_texture;
+sf::RectangleShape done_button;
+sf::Texture done_texture;
+sf::Sprite donesprite;
+std::string userinput;
+sf::Text username;
+sf::RectangleShape usertextbox;
+sf::RectangleShape pwtextbox;
+sf::Text password;
+std::string pwinput;
+string shown_password = "";
+sf::Text error_message[2];
+sf::Font error_message_font;
+///////*
+
 int main() {
 	get_all_files_names_within_folder(directory);
-	sf::Vector2f mouse_position;
+	read_users();
 	string mod = "welcome";
-	//cout << songs.size(); 
+
 	sf::RenderWindow starting_window(sf::VideoMode(600, 300), "Kojack Player", sf::Style::Default);
+
+	error_message_font.loadFromFile("Roboto-ThinItalic.ttf");
+	error_message[0].setFont(error_message_font);
+	error_message[0].setCharacterSize(25);
+	error_message[0].setFillColor(sf::Color::Red);
+	error_message[0].setStyle(sf::Text::Bold);
+	error_message[0].setPosition(50, 135);
+	error_message[0].setString("Username already taken");
+
+
+
+	error_message[1].setFont(error_message_font);
+	error_message[1].setCharacterSize(25);
+	error_message[1].setFillColor(sf::Color::Red);
+	error_message[1].setStyle(sf::Text::Bold);
+	error_message[1].setPosition(50, 205);
+	error_message[1].setString("Invalid username or password");
+
+
+	usertextbox.setSize(sf::Vector2f(175, 21));
+	usertextbox.setOrigin(85, 143);
+	usertextbox.setPosition(265, 242);
+
+
+	pwtextbox.setSize(sf::Vector2f(175, 21));
+	pwtextbox.setOrigin(85, 143);
+	pwtextbox.setPosition(265, 319);
+
+
+	done_button.setSize(sf::Vector2f(165, 96));
+	done_button.setOrigin(85, 143);
+	done_button.setPosition(300, 375);
+	done_texture.loadFromFile("done button.png");
+	done_button.setTexture(&done_texture);
+	donesprite.setTexture(done_texture);
+	donesprite.setOrigin(85, 143);
+	donesprite.setPosition(300, 375);
+
+
+	sf::Font myfont;
+	myfont.loadFromFile("parkway lush.ttf");
+	username.setFont(myfont);
+	username.setFillColor(sf::Color::Blue);
+	username.setPosition(265, 235);
+	username.setOrigin(85, 143);
+
+
+	password.setFont(myfont);
+	password.setFillColor(sf::Color::Blue);
+	password.setPosition(265, 311);
+	password.setOrigin(85, 143);
+
+	back_pic.setSize(sf::Vector2f(600.0f, 300.0f));
+	background_texture.loadFromFile("datawindow.png");
+	if (!background_texture.loadFromFile("datawindow.png")) {
+		cout << "error while loading the background";
+	}
+	back_pic.setTexture(&background_texture);
+	int windicator = 0;
 	while (starting_window.isOpen())
 	{
 		sf::Event starting;
-		mouse_position.x = sf::Mouse::getPosition(starting_window).x;
-		mouse_position.y = sf::Mouse::getPosition(starting_window).y;
-		if (mod == "welcome")
-		{
-			starting_window.clear();
-			wpage(starting_window, starting, mod, mouse_position);
-
-
-		}
-		if (mod == "login")
-		{
-			starting_window.clear();
-			datapage(starting_window, starting, mod, mouse_position);
-
-		}
-		if (mod == "sign up")
-		{
-			starting_window.clear();
-			datapage(starting_window, starting, mod, mouse_position);
-
-		}
 		while (starting_window.pollEvent(starting))
 		{
+
 			if (starting.type == sf::Event::Closed) {
 				starting_window.close();
-				return 0;
 			}
+			mouse_position.x = sf::Mouse::getPosition(starting_window).x;
+			mouse_position.y = sf::Mouse::getPosition(starting_window).y;
+			cout << mouse_position.x << "\t\t" << mouse_position.y << endl;
+			if (mod == "welcome")
+			{
+				starting_window.clear();
+				wpage(starting_window, starting, mod, mouse_position);
 
+			}
+			if (mod == "login")
+			{
+				starting_window.clear();
+				starting_window.draw(back_pic);
+				starting_window.draw(done_button);
+				starting_window.draw(usertextbox);
+				starting_window.draw(pwtextbox);
+				if (focus(usertextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 1;
+					}
+				}
+				if (focus(pwtextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 2;
+					}
+				}
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 1)
+					{
+						userinput += starting.text.unicode;
+						username.setString(userinput);
+					}
+					if (starting.text.unicode == 8 && userinput.size() > 0 && windicator == 1)
+					{
+						userinput.erase(userinput.begin() + userinput.size() - 1);
+						username.setString(userinput);
+					}
+
+				}
+				starting_window.draw(username);
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 2)
+					{
+						pwinput += starting.text.unicode;
+						shown_password += "*";
+						password.setString(shown_password);
+					}
+					else if (starting.text.unicode == 8 && pwinput.size() > 0 && windicator == 2 && shown_password.size() > 0)
+					{
+						pwinput.erase(pwinput.begin() + pwinput.size() - 1);
+						shown_password.erase(shown_password.size() - 1);
+						password.setString(shown_password);
+					}
+
+
+				}
+				starting_window.draw(password);
+				if (focus(done_button.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						if (login(userinput, pwinput) == true) {
+							starting_window.close();
+						}
+						else {
+							starting_window.draw(error_message[1]);
+						}
+					}
+				}
+			}
+			if (mod == "sign up")
+			{
+
+				starting_window.clear();
+				starting_window.draw(back_pic);
+				starting_window.draw(done_button);
+				starting_window.draw(usertextbox);
+				starting_window.draw(pwtextbox);
+				if (focus(usertextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 1;
+					}
+				}
+				if (focus(pwtextbox.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						windicator = 2;
+					}
+				}
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 1)
+					{
+						userinput += starting.text.unicode;
+						username.setString(userinput);
+					}
+					if (starting.text.unicode == 8 && userinput.size() > 0 && windicator == 1)
+					{
+						userinput.erase(userinput.begin() + userinput.size() - 1);
+						username.setString(userinput);
+					}
+
+				}
+				starting_window.draw(username);
+				if (starting.type == sf::Event::TextEntered)
+				{
+					if (starting.text.unicode < 128 && starting.text.unicode != 8 && windicator == 2)
+					{
+						pwinput += starting.text.unicode;
+						shown_password += "*";
+						password.setString(shown_password);
+					}
+					else if (starting.text.unicode == 8 && pwinput.size() > 0 && windicator == 2 && shown_password.size() > 0)
+					{
+						pwinput.erase(pwinput.begin() + pwinput.size() - 1);
+						shown_password.erase(shown_password.size() - 1);
+						password.setString(shown_password);
+					}
+
+
+				}
+				starting_window.draw(password);
+				if (focus(done_button.getGlobalBounds(), mouse_position))
+				{
+					if (starting.type == sf::Event::MouseButtonPressed &&starting.mouseButton.button == sf::Mouse::Left)
+					{
+						if (signup(userinput, pwinput) == true)
+							starting_window.close();
+						else {
+							starting_window.draw(error_message[0]);
+						}
+					}
+				}
+			}
+			starting_window.display();
+			starting_window.clear();
 
 		}
-
-		starting_window.display();
-		starting_window.clear();
 
 	}
 
 
 
 
+
+	
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Kojack Player", sf::Style::Default);
 	mod = "song";
+	cout << " sds";
 	Read_MetaData();
+	cout << "sdasD"<<endl;
 	while (window.isOpen())
 	{
 		sf::Event event;
-
+		cout << "zeby" << endl;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed) {
 				window.close();
 			}
-
+			cout << "sdsdsdsdsds" << endl;
 			mouse_position.x = sf::Mouse::getPosition(window).x;
 			mouse_position.y = sf::Mouse::getPosition(window).y;
 			//cout << mouse_position.x << "\t" << mouse_position.y << endl;
@@ -234,6 +433,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 	while_playing.use_font.loadFromFile("Roboto-ThinItalic.ttf");
 
+
 	float x = 55;
 	for (int i = 0; i < songs.size(); ++i) {
 
@@ -251,28 +451,81 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 	}
 
+	while_playing.search_box.setRadius(30);
+	while_playing.search_box.setPosition(10, 530);
+	while_playing.search_box.setFillColor(sf::Color::Green);
+	if (focus(while_playing.search_box.getGlobalBounds(), mouse_position)) {
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			cout << "woek";
 
-
+		}
+	}
 
 
 
 
 	while_playing.rating_bar.setSize(sf::Vector2f(200, 40));
-	while_playing.rating_bar.setPosition(580, 535);
-	while_playing.rating_bar.setFillColor(sf::Color::Green);
+	while_playing.rating_bar.setPosition(600, 535);
+	while_playing.ratingtext.loadFromFile("rating 0.png");
+	while_playing.rating_bar.setTexture(&while_playing.ratingtext);
+	
+	if (rating==1)
+	{
+		while_playing.ratingtext.loadFromFile("rating1.png");
+	}
+	if (rating==2)
+	{
+		while_playing.ratingtext.loadFromFile("rating2.png");
+	}
+	if (rating==3)
+	{
+		while_playing.ratingtext.loadFromFile("rating3.png");
+	}
+	if (rating==4)
+	{
+		while_playing.ratingtext.loadFromFile("rating4.png");
+	}
+	if (rating==5)
+	{
+		while_playing.ratingtext.loadFromFile("rating5.png");
+	}
 
-
-
-	//while_playing.search_box.setSize(sf::Vector2f(200, 40));
-	//while_playing.search_box.setPosition(520, 75);
-	//while_playing.search_pic.loadFromFile("search bar.png");
-	//while_playing.search_box.setTexture(&while_playing.search_pic);
-	//while_playing.search_sprite.setTexture(while_playing.search_pic);
-	//while_playing.search_sprite.setPosition(520, 75);
-
-
-
-
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 600 && mouse_position.x < 635)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 1;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 640 && mouse_position.x <675)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 2;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 680 && mouse_position.x < 715 )
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 3;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 720 && mouse_position.x < 755)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 4;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 760 && mouse_position.x < 795)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 5;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x < 600)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 0;
+		}
+	}
 	while_playing.play_button.setSize(sf::Vector2f(75, 75));
 	while_playing.play_button.setOrigin(25, 25);
 	while_playing.play_button.setPosition(400, 540);
@@ -306,13 +559,18 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 
-	while_playing.shuffle_button.setSize(sf::Vector2f(75, 75));
+	while_playing.shuffle_button.setSize(sf::Vector2f(60, 60));
 	while_playing.shuffle_button.setOrigin(37.5, 37.5);
-	while_playing.shuffle_button.setPosition(150, 550);
-	while_playing.shuffle_pic.loadFromFile("shuffle.png");
+	while_playing.shuffle_button.setPosition(145, 565);
+	if (!shufflle) {
+		while_playing.shuffle_pic.loadFromFile("not shuffled.png");
+	}
+	else {
+		while_playing.shuffle_pic.loadFromFile("shuffled.png");
+	}
 	while_playing.shuffle_button.setTexture(&while_playing.shuffle_pic);
 	while_playing.shuffle_sprite.setTexture(while_playing.shuffle_pic);
-	while_playing.shuffle_sprite.setPosition(150, 550);
+	while_playing.shuffle_sprite.setPosition(145, 570);
 	while_playing.shuffle_sprite.setOrigin(12.5, 12.5);
 
 
@@ -377,7 +635,8 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	window.draw(while_playing.backward_button);
 	window.draw(while_playing.forward_button);
 	window.draw(while_playing.play_button);
-	//window.draw(while_playing.search_box);
+	window.draw(while_playing.search_box);
+
 	for (int i = 0; i < songs.size(); i++) {
 		window.draw(while_playing.music_box[i]);
 		window.draw(while_playing.name_music[i]);
@@ -390,19 +649,19 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	if (focus(while_playing.album_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "album";
-
+			songs_by_a_default_thing.clear();
 		}
 	}
 	if (focus(while_playing.genre_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "genre";
-
+			songs_by_a_default_thing.clear();
 		}
 	}
 	if (focus(while_playing.artist_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "artist";
-
+			songs_by_a_default_thing.clear();
 		}
 	}
 
@@ -428,7 +687,7 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 
 
 	/////// enabling shuffle 
-	if (focus(while_playing.shuffle_sprite.getGlobalBounds(), mouse_position)) {
+	if (focus(while_playing.shuffle_button.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			if (shufflle) {
 				shufflle = false;
@@ -752,14 +1011,15 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	for (int i = 0; i < to_be_shown.size(); ++i) {
 		if (focus(album[i].getGlobalBounds(), mouse_position)) {
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-				album_song = View_song(1, to_be_shown[i]);
+				songs_by_a_default_thing = View_song(1, to_be_shown[i]);
+
 			}
 		}
 
 	}
-	
+
 	y = 55;
-	for (int i = 0; i < album_song.size(); i++) {
+	for (int i = 0; i < songs_by_a_default_thing.size(); i++) {
 		album_result[i].setSize(Vector2f(200, 30));
 		album_result[i].setPosition(300, y);
 		album_result[i].setFillColor(Color::Transparent);
@@ -767,16 +1027,17 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 		album_result_text[i].setStyle(Text::Bold);
 		album_result_text[i].setColor(Color::Magenta);
 		album_result_text[i].setPosition(300, y);
-		album_result_text[i].setString(album_song[i]);
+		album_result_text[i].setString(songs_by_a_default_thing[i]);
 		album_result_text[i].setCharacterSize(24);
 		y += 33;
 		window.draw(album_result[i]);
 		window.draw(album_result_text[i]);
 	}
-	for (int i = 0; i < album_song.size(); ++i) {
+	for (int i = 0; i < songs_by_a_default_thing.size(); ++i) {
 		if (focus(album_result[i].getGlobalBounds(), mouse_position)) {
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-				playMusic(album_song[i], i, playing, music);
+				playMusic(songs_by_a_default_thing[i], i, playing, music);
+				songs_by_a_default_thing.clear();
 			}
 		}
 	}
@@ -796,13 +1057,13 @@ void album_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	if (focus(genre_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "genre";
-
+			songs_by_a_default_thing.clear();
 		}
 	}
 	if (focus(artist_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "artist";
-
+			songs_by_a_default_thing.clear();
 		}
 	}
 
@@ -883,10 +1144,6 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	sf::Sprite song_sprite;
 	sf::Texture artist_pic;
 	sf::Sprite artist_sprite;
-	sf::RectangleShape search_box;
-	sf::Texture search_pic;
-	sf::Sprite search_sprite;
-	sf::Text seacr_text;
 	RectangleShape artist[20];
 	Text name_artist[20];
 	Font use_font;
@@ -898,18 +1155,18 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	vector<string> to_be_shown = View_all(1);
 
 
-	float x = 55;
+	float y = 55;
 	for (int i = 0; i < to_be_shown.size(); ++i) {
 		artist[i].setSize(Vector2f(200, 30));
-		artist[i].setPosition(0, x);
+		artist[i].setPosition(0, y);
 		artist[i].setFillColor(Color::Transparent);
 		name_artist[i].setFont(use_font);
 		name_artist[i].setStyle(Text::Bold);
 		name_artist[i].setString(to_be_shown[i]);
 		name_artist[i].setColor(Color::Blue);
-		name_artist[i].setPosition(0, x);
+		name_artist[i].setPosition(0, y);
 		name_artist[i].setCharacterSize(24);
-		x += 33;
+		y += 33;
 
 	}
 
@@ -917,7 +1174,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 
 
 
-	
+
 
 	play_button.setSize(sf::Vector2f(75, 75));
 	play_button.setOrigin(25, 25);
@@ -1034,14 +1291,14 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	for (int i = 0; i < to_be_shown.size(); ++i) {
 		if (focus(artist[i].getGlobalBounds(), mouse_position)) {
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-				artist_song = View_song(2, to_be_shown[i]);
+				songs_by_a_default_thing = View_song(2, to_be_shown[i]);
 			}
 		}
 
 	}
 
-	int y = 55;
-	for (int i = 0; i < artist_song.size(); i++) {
+	y = 55;
+	for (int i = 0; i < songs_by_a_default_thing.size(); i++) {
 		artist_result[i].setSize(Vector2f(200, 30));
 		artist_result[i].setPosition(200, y);
 		artist_result[i].setFillColor(Color::Transparent);
@@ -1049,20 +1306,21 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 		artist_result_text[i].setStyle(Text::Bold);
 		artist_result_text[i].setColor(Color::Magenta);
 		artist_result_text[i].setPosition(200, y);
-		artist_result_text[i].setString(artist_song[i]);
+		artist_result_text[i].setString(songs_by_a_default_thing[i]);
 		artist_result_text[i].setCharacterSize(24);
 		y += 33;
 		window.draw(artist_result[i]);
 		window.draw(artist_result_text[i]);
 	}
-	for (int i = 0; i < artist_song.size(); ++i) {
+	for (int i = 0; i < songs_by_a_default_thing.size(); ++i) {
 		if (focus(artist_result[i].getGlobalBounds(), mouse_position)) {
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-				playMusic(artist_song[i], i, playing, music);
+				playMusic(songs_by_a_default_thing[i], i, playing, music);
+				songs_by_a_default_thing.clear();
 			}
 		}
 	}
-	
+
 
 
 
@@ -1070,12 +1328,13 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 	if (focus(album_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "album";
-
+			songs_by_a_default_thing.clear();
 		}
 	}
 	if (focus(genre_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "genre";
+			songs_by_a_default_thing.clear();
 
 		}
 	}
@@ -1088,7 +1347,7 @@ void artist_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Even
 
 
 
-	
+
 
 
 
@@ -1166,10 +1425,6 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	sf::Sprite song_sprite;
 	sf::Texture artist_pic;
 	sf::Sprite artist_sprite;
-	sf::RectangleShape search_box;
-	sf::Texture search_pic;
-	sf::Sprite search_sprite;
-	sf::Text seacr_text;
 	RectangleShape genre[20];
 	Text name_genre[20];
 	Font use_font;
@@ -1179,19 +1434,19 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 
 	vector<string> to_be_shown = View_all(2);
 
-	float x = 55;
+	float y = 55;
 	for (int i = 0; i < to_be_shown.size(); ++i) {
 		genre[i].setSize(Vector2f(200, 30));
-		genre[i].setPosition(0, x);
+		genre[i].setPosition(0, y);
 		genre[i].setFillColor(Color::Transparent);
 		name_genre[i].setFont(use_font);
 		name_genre[i].setStyle(Text::Bold);
 		name_genre[i].setString(to_be_shown[i]);
 		name_genre[i].setColor(Color::Blue);
-		name_genre[i].setPosition(0, x);
+		name_genre[i].setPosition(0, y);
 		name_genre[i].setCharacterSize(24);
 
-		x += 33;
+		y += 33;
 
 	}
 
@@ -1299,7 +1554,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	window.draw(back_pic);
 	window.draw(shuffle_button);
 	window.draw(genre_list);
-    window.draw(album_list);
+	window.draw(album_list);
 	window.draw(songs_list);
 	window.draw(artist_list);
 	window.draw(backward_button);
@@ -1312,14 +1567,14 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	for (int i = 0; i < to_be_shown.size(); ++i) {
 		if (focus(genre[i].getGlobalBounds(), mouse_position)) {
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-				genre_song = View_song(3, to_be_shown[i]);
+				songs_by_a_default_thing = View_song(3, to_be_shown[i]);
 			}
 		}
 
 	}
 
-	int y = 55;
-	for (int i = 0; i < genre_song.size(); i++) {
+	y = 55;
+	for (int i = 0; i < songs_by_a_default_thing.size(); i++) {
 		genre_result[i].setSize(Vector2f(200, 30));
 		genre_result[i].setPosition(300, y);
 		genre_result[i].setFillColor(Color::Transparent);
@@ -1327,16 +1582,17 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 		genre_result_text[i].setStyle(Text::Bold);
 		genre_result_text[i].setColor(Color::Magenta);
 		genre_result_text[i].setPosition(300, y);
-		genre_result_text[i].setString(genre_song[i]);
+		genre_result_text[i].setString(songs_by_a_default_thing[i]);
 		genre_result_text[i].setCharacterSize(24);
 		y += 33;
 		window.draw(genre_result[i]);
 		window.draw(genre_result_text[i]);
 	}
-	for (int i = 0; i < genre_song.size(); ++i) {
+	for (int i = 0; i < songs_by_a_default_thing.size(); ++i) {
 		if (focus(genre_result[i].getGlobalBounds(), mouse_position)) {
 			if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
-				playMusic(genre_song[i], i, playing, music);
+				playMusic(songs_by_a_default_thing[i], i, playing, music);
+				songs_by_a_default_thing.clear();
 			}
 		}
 	}
@@ -1346,7 +1602,7 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	if (focus(album_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "album";
-
+			songs_by_a_default_thing.clear();
 		}
 	}
 	if (focus(song_sprite.getGlobalBounds(), mouse_position)) {
@@ -1358,19 +1614,19 @@ void genre_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event
 	if (focus(artist_sprite.getGlobalBounds(), mouse_position)) {
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			mod = "artist";
-
+			songs_by_a_default_thing.clear();
 		}
 	}
 
 
 
-	
 
 
-	
 
 
-	
+
+
+
 
 
 
@@ -1550,13 +1806,10 @@ void read_users()
 
 
 
-void signup()
+bool signup(string username, string password)
 {
 	bool taken = false;
-	cout << "Please enter your Username : ";
-	string username;
-	string password;
-	cin >> username;
+
 	for (int i = 0; i < NumUsers; i++)
 	{
 		if (username == users_data[i].name)
@@ -1567,14 +1820,14 @@ void signup()
 	}
 	if (!taken)
 	{
+
 		cout << "\nPlease enter your Password : ";
-		cin >> password;
 	}
-	else
-	{
-		return signup();
-		return;
+	else {
+		return false;
 	}
+
+
 	NumUsers++;
 
 	// updates user info file
@@ -1597,36 +1850,37 @@ void signup()
 	new_file.open(users_directory + username + ".txt");
 	for (int i = 0; i < songs.size(); i++)
 		cout << 0 << endl;
-	system("cls");
+	return true;
+
 }
 
 
 
-void login()
+bool login(string current_user, string password)
 {
-	string password;
 	bool Logedin = false;
 	while (true)
 	{
 		cout << "Username : ";
-		cin >> current_user;
 		for (int i = 0; i < NumUsers; i++)
 		{
 			if (current_user == users_data[i].name)
 			{
 				cout << "\nPassword : ";
-				cin >> password;
+				//cin >> password;
 				if (password == users_data[i].password)
 				{
 					Logedin = true;
-					break;
+
 				}
 			}
 		}
 		if (Logedin)
-			break;
-		else
+			return true;
+		else {
+			return false;
 			cout << "invalid username or password" << endl;
+		}
 
 	}
 
