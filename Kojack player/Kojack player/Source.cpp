@@ -122,6 +122,7 @@ bool playing = false;
 vector <string> songs_by_a_default_thing;
 int showanythingiwant;
 sf::Music music;
+int number_of_current_songs = 0; 
 
 
 
@@ -745,9 +746,8 @@ void song_tab(sf::RenderWindow& window, sf::Vector2f& mouse_position, sf::Event&
 	}
 
 
-	//cout << is_songs_sorted << endl;
 	// from high to low 
-	if (focus(while_playing.sorting_button[0].getGlobalBounds(), mouse_position) ){
+	if (focus(while_playing.sorting_button[0].getGlobalBounds(), mouse_position)){
 		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
 			if (is_songs_sorted == false) {
 				is_songs_sorted = true;
@@ -818,6 +818,7 @@ void get_all_files_names_within_folder(string folder)
 				song_data[i].name.erase(song_data[i].name.end() - 4, song_data[i].name.end());
 				songs.push_back(song_data[i].name);
 				i++;
+				number_of_current_songs++; 
 			}
 		} while (::FindNextFile(hFind, &fd));
 		::FindClose(hFind);
