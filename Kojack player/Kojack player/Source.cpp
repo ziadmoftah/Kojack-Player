@@ -383,11 +383,11 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Kojack Player", sf::Style::Default);
 	mod = "song";
 	Read_MetaData();
-	READ_RATING();
 	while (window.isOpen())
 	{
 		sf::Event event;
 
+		READ_RATING();
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed) {
