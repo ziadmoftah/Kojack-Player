@@ -38,7 +38,7 @@ struct second_window {
 
 
 
-while_playing.rating_bar.setSize(sf::Vector2f(200, 40));
+	while_playing.rating_bar.setSize(sf::Vector2f(200, 40));
 	while_playing.rating_bar.setPosition(600, 535);
 	while_playing.ratingtext.loadFromFile("rating 0.png");
 	while_playing.rating_bar.setTexture(&while_playing.ratingtext);
@@ -64,7 +64,39 @@ while_playing.rating_bar.setSize(sf::Vector2f(200, 40));
 		while_playing.ratingtext.loadFromFile("rating5.png");
 	}
 
-	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position > 600)
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 600 && mouse_position.x < 635)
 	{
-		cout << "ziad kan sa7 ";
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 1;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 640 && mouse_position.x <675)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 2;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 680 && mouse_position.x < 715 )
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 3;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 720 && mouse_position.x < 755)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 4;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x > 760 && mouse_position.x < 795)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 5;
+		}
+	}
+	if (focus(while_playing.rating_bar.getGlobalBounds(), mouse_position) && mouse_position.x < 600)
+	{
+		if (event.type == sf::Event::MouseButtonPressed  && event.mouseButton.button == sf::Mouse::Left) {
+			rating = 0;
+		}
 	}
